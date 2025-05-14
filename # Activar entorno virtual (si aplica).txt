@@ -1,0 +1,2 @@
+# Activar entorno virtual (si aplica)
+python main.py
