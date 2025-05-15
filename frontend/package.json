@@ -1,0 +1,21 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend del visor meteorológico",
+  "main": "script.js",
+  "private": true,
+  "scripts": {
+    "start": "live-server --port=3000 --no-browser --watch=./src"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bootstrap": "^5.1.3",
+    "chart.js": "^3.7.0",
+    "jquery": "^3.6.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.0"
+  }
+}
