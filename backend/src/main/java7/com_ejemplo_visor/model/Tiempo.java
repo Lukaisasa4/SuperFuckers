@@ -1,4 +1,4 @@
-package com.ejemplo_visor.model;
+package main.java7.com_ejemplo_visor.model;
 
 public class Tiempo {
     private String ciudad;
