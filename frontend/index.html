@@ -2,16 +2,46 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Visor Meteorológico</title>
+  <title>Eguraldiaren Behatokia - Euskal Herria</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-  <h1>Consulta del Tiempo</h1>
-  <input type="text" id="ciudad" placeholder="Introduce una ciudad">
-  <button onclick="consultar()">Consultar</button>
-  
-  <div id="resultado"></div>
-
+  <div class="container">
+    <header class="my-4 text-center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Flag_of_the_Basque_Country.svg" alt="Ikurriña" class="basque-flag">
+      <h1 class="d-inline align-middle">Eguraldiaren Behatokia</h1>
+      <p class="lead">Euskal Herriko hiri nagusien eguraldia kontsultatu</p>
+    </header>
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="input-group mb-3">
+          <input type="text" id="ciudad" class="form-control" placeholder="Bilbao, Donostia, Gasteiz, Iruñea...">
+          <button class="btn btn-primary" onclick="consultar()">Kontsultatu</button>
+        </div>
+        <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+          <button class="btn btn-outline-secondary" onclick="setCiudad('Bilbao')">Bilbao</button>
+          <button class="btn btn-outline-secondary" onclick="setCiudad('Donostia')">Donostia</button>
+          <button class="btn btn-outline-secondary" onclick="setCiudad('Gasteiz')">Gasteiz</button>
+          <button class="btn btn-outline-secondary" onclick="setCiudad('Iruñea')">Iruñea</button>
+          <button class="btn btn-outline-secondary" onclick="setCiudad('Baiona')">Baiona</button>
+        </div>
+        <div id="resultado" class="weather-card"></div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <p>Eguraldiaren Behatokia &copy; 2024 | Euskal Herria | <span style="font-size:1.1em;">☀️🌧️🌬️</span><br>
+    Datuak: OpenWeatherMap / AEMET</p>
+  </footer>
+  <script>
+    function setCiudad(nombre) {
+      document.getElementById('ciudad').value = nombre;
+      consultar();
+    }
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
