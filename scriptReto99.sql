@@ -47,3 +47,8 @@ CREATE TABLE prediccion (
     FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones(id)
 );
 
+
+select * from ubicaciones;
+select * from tiempo_actual;
+select * from historico;
+select * from prediccion;
