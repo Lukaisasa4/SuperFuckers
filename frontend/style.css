@@ -1,46 +1,36 @@
- body {
-      background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
-      min-height: 100vh;
-    }
-    .weather-card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 2rem;
-      margin-top: 2rem;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .basque-flag {
-      width: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .footer {
-      margin-top: 60px;
-      text-align: center;
-      color: #555;
-      font-size: 0.95em;
-    }
-*/
-    .footer a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      text-decoration: underline;
-    }
-    .weather-card h2 {
-      margin: 0;
-      font-size: 1.5em;
-      color: #333;
-    }
-    .weather-card p {
-      margin: 0.5em 0;
-      color: #666;
-    }
-    .weather-card img {
-      width: 100px;
-      height: auto;
-    }
+/* Mejoras visuales para los botones */
+.btn-outline-secondary {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Mejoras para el área del footer */
+.footer {
+  text-align: center;
+  padding: 1.5rem 0;
+  background-color: #f8f9fa;
+}
+
+.basque-flag {
+  max-width: 80px;
+  height: auto;
+  margin-right: 15px;
+}
+
+/* Centrado vertical para el texto */
+.d-inline.align-middle {
+  vertical-align: middle;
+}
+
+/* Estilos para el resultado */
+.weather-card {
+  padding: 20px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  margin-top: 20px;
+  display: none; /* Inicialmente oculto */
+}
