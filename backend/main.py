@@ -23,10 +23,16 @@ def obtener_descripcion_weathercode(codigo):
 app = FastAPI()
 
 CIUDADES = {
-    "Donostia": {"lat": 43.3128, "lon": -1.9750},
-    "Bilbao": {"lat": 43.2630, "lon": -2.9350},
-    "Vitoria-Gasteiz": {"lat": 42.8467, "lon": -2.6727},
-    "Pasaia": {"lat": 43.3251, "lon": -1.9315}
+    "Bilbao": {"lat": 43.2630, "lon": -2.9350, "alt": 19},
+    "Vitoria-Gasteiz": {"lat": 42.8467, "lon": -2.6716, "alt": 525},
+    "Donostia / San Sebastián": {"lat": 43.3128, "lon": -1.9748, "alt": 6},
+    "Barakaldo": {"lat": 43.2956, "lon": -2.9972, "alt": 39},
+    "Getxo": {"lat": 43.3569, "lon": -3.0116, "alt": 50},
+    "Portugalete": {"lat": 43.3204, "lon": -3.0197, "alt": 20},
+    "Irun": {"lat": 43.3381, "lon": -1.7890, "alt": 10},
+    "Basauri": {"lat": 43.2386, "lon": -2.8852, "alt": 70},
+    "Durango": {"lat": 43.1704, "lon": -2.6336, "alt": 121},
+    "Eibar": {"lat": 43.1849, "lon": -2.4713, "alt": 121}
 }
 
 WEATHER_CODES = {

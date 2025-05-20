@@ -6,11 +6,18 @@ const app = express();
 app.use(cors());
 
 const cities = {
-  donostia: { name: "Donostia", latitude: 43.3128, longitude: -1.9750 },
-  pasaia: { name: "Pasaia", latitude: 43.3256, longitude: -1.9261 },
-  bilbao: { name: "Bilbao", latitude: 43.2630, longitude: -2.9350 },
-  vitoria: { name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6727 }
+  bilbao: { name: "Bilbao", latitude: 43.2630, longitude: -2.9350, altitude: 19 },
+  "vitoria-gasteiz": { name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6716, altitude: 525 },
+  "donostia-san-sebastian": { name: "Donostia / San Sebastián", latitude: 43.3128, longitude: -1.9748, altitude: 6 },
+  barakaldo: { name: "Barakaldo", latitude: 43.2956, longitude: -2.9972, altitude: 39 },
+  getxo: { name: "Getxo", latitude: 43.3569, longitude: -3.0116, altitude: 50 },
+  portugalete: { name: "Portugalete", latitude: 43.3204, longitude: -3.0197, altitude: 20 },
+  irun: { name: "Irun", latitude: 43.3381, longitude: -1.7890, altitude: 10 },
+  basauri: { name: "Basauri", latitude: 43.2386, longitude: -2.8852, altitude: 70 },
+  durango: { name: "Durango", latitude: 43.1704, longitude: -2.6336, altitude: 121 },
+  eibar: { name: "Eibar", latitude: 43.1849, longitude: -2.4713, altitude: 121 }
 };
+
 
 const weatherMap = {
   0: { desc: "Despejado", emoji: "☀️" },
