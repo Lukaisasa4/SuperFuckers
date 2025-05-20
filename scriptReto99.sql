@@ -9,6 +9,7 @@ CREATE TABLE ubicaciones (
     altitud INT
 );
 
+
 INSERT INTO ubicaciones (nombre, latitud, longitud, altitud) VALUES
 ('Bilbao', 43.2630, -2.9350, 19),
 ('Vitoria-Gasteiz', 42.8467, -2.6716, 525),
