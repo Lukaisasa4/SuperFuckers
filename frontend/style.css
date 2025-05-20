@@ -56,14 +56,15 @@ header p {
 /* Tiempo */
 #tiempo .weather-card {
   background-color: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  display: inline-block;
-  width: 100%;
-  max-width: 500px;
-  margin: 40px auto;
+  padding: 35px 50px;
+  border-radius: 32px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+  display: block;
+  width: 98vw;
+  max-width: 1400px;
+  margin: 60px auto 40px auto;
   text-align: left;
+  animation: fadeIn 1.5s ease-out;
 }
 
 .weather-card .estado {
@@ -143,8 +144,51 @@ footer a:hover {
   }
 }
 
-#tiempo .weather-card {
-  animation: fadeIn 1.5s ease-out;
+/* Cuadros para los datos */
+.cuadros-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.cuadro-tiempo,
+.cuadro-sol {
+  background: rgba(0, 255, 255, 0.15); /* mismo color para todos los cuadros */
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 24px 28px;
+  min-width: 220px;
+  max-width: 340px;
+  color: #00363a;
+  font-size: 1.15em;
+  text-align: center;
+  backdrop-filter: blur(2px);
+  margin-bottom: 24px;
+  flex: 1 1 220px;
+}
+
+/* Opcional: alineación a la izquierda y derecha en desktop */
+.cuadro-izquierda {
+  text-align: left;
+}
+.cuadro-derecha {
+  text-align: left;
+}
+
+/* Responsive para móviles */
+@media (max-width: 800px) {
+  .cuadros-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .cuadro-tiempo, .cuadro-sol {
+    max-width: 95vw;
+    text-align: center;
+  }
 }
 
 /* Responsive Design */
