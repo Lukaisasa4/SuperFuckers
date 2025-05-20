@@ -34,14 +34,22 @@
         <div class="descripcion">Cargando...</div>
       </div>
       <div class="info">
-        <p><strong>Temperatura:</strong> <span class="temperatura">...</span> °C</p>
-        <p><strong>Humedad:</strong> <span class="humedad">...</span> %</p>
-        <p><strong>Presión:</strong> <span class="presion">...</span> hPa</p>
-        <p><strong>Viento:</strong> <span class="viento">...</span> km/h</p>
-        <p><strong>Máxima:</strong> <span class="maxima">...</span> °C</p>
-        <p><strong>Mínima:</strong> <span class="minima">...</span> °C</p>
-        <p><strong>Salida del Sol:</strong> <span class="salida-sol">...</span></p>
-        <p><strong>Puesta del Sol:</strong> <span class="puesta-sol">...</span></p>
+        <div class="cuadros-container">
+          <div class="cuadro-tiempo cuadro-izquierda">
+            <p><strong>Temperatura:</strong> <span class="temperatura">...</span> °C</p>
+            <p><strong>Máxima:</strong> <span class="maxima">...</span> °C</p>
+            <p><strong>Mínima:</strong> <span class="minima">...</span> °C</p>
+          </div>
+          <div class="cuadro-tiempo cuadro-derecha">
+            <p><strong>Humedad:</strong> <span class="humedad">...</span> %</p>
+            <p><strong>Presión:</strong> <span class="presion">...</span> hPa</p>
+            <p><strong>Viento:</strong> <span class="viento">...</span> km/h</p>
+          </div>
+          <div class="cuadro-sol">
+            <p><strong>Salida del Sol:</strong> <span class="salida-sol">...</span></p>
+            <p><strong>Puesta del Sol:</strong> <span class="puesta-sol">...</span></p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -51,7 +59,7 @@
     <h2>Previsión Horaria</h2>
     <div class="grafico-temp-container">
       <div class="grafico-scroll-x">
-        <canvas id="graficoTemp" width="1800" height="350"></canvas>
+        <canvas id="graficoTemp" width="2400" height="350"></canvas>
       </div>
     </div>
     <div class="cuadro-tiempo" style="margin: 32px auto 0 auto; max-width: 500px;">

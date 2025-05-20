@@ -27,8 +27,7 @@ fetch('http://localhost:3000/api/tiempo-donosti')
 
 // Ejemplo de datos
 const horas = Array.from({length: 24}, (_, i) => `${i}:00`);
-const datos = [/* tus datos de temperatura por hora, 24 valores */];
-
+const datos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 const ctx = document.getElementById('graficoTemp').getContext('2d');
 new Chart(ctx, {
   type: 'line',
