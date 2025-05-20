@@ -9,6 +9,18 @@ CREATE TABLE ubicaciones (
     altitud INT
 );
 
+INSERT INTO ubicaciones (nombre, latitud, longitud, altitud) VALUES
+('Bilbao', 43.2630, -2.9350, 19),
+('Vitoria-Gasteiz', 42.8467, -2.6716, 525),
+('Donostia / San Sebastián', 43.3128, -1.9748, 6),
+('Barakaldo', 43.2956, -2.9972, 39),
+('Getxo', 43.3569, -3.0116, 50),
+('Portugalete', 43.3204, -3.0197, 20),
+('Irun', 43.3381, -1.7890, 10),
+('Basauri', 43.2386, -2.8852, 70),
+('Durango', 43.1704, -2.6336, 121),
+('Eibar', 43.1849, -2.4713, 121);
+
 
 CREATE TABLE tiempo_actual (
     id INT AUTO_INCREMENT PRIMARY KEY,
