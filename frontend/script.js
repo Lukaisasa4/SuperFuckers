@@ -1,96 +1,12 @@
-/* Fuente base y fondo general */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #dcdcdc; /* Gris claro */
-  color: #000000;
-  min-height: 100vh;
-
-
-  background-size: cover;
-  color: #ffffff;
-  min-height: 100vh;
-  backdrop-filter: blur(3px);
-}
-
-/* Contenedor principal */
-.container {
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 15px;
-  padding: 30px;
-  margin-top: 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-/* Encabezado */
-header h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-left: 10px;
-  color: #ffffff;
-}
-
-.lead {
-  color: #dddddd;
-  font-weight: 300;
-  margin-top: 10px;
-}
-
-/* Bandera */
-.basque-flag {
-  width: 50px;
-  height: auto;
-  margin-right: 10px;
-}
-
-/* Buscador */
-.input-group input {
-  border-radius: 10px 0 0 10px;
-}
-.input-group .btn {
-  border-radius: 0 10px 10px 0;
-}
-
-/* Botones de ciudades */
-button.btn-outline-light {
-  border: 1px solid #ffffff;
-  color: #ffffff;
-  background-color: transparent;
-  transition: all 0.3s ease-in-out;
-}
-button.btn-outline-light:hover {
-  background-color: #ffffff;
-  color: #000000;
-  transform: scale(1.05);
-}
-
-/* Tarjeta del tiempo */
-.weather-card {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  color: #fff;
-}
-
-/* GIF de lluvia */
-.weather-card img.lluvia-gif {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  color: #cccccc;
-  margin-top: 40px;
-  font-size: 0.9rem;
-  padding-bottom: 20px;
-}
+fetch('http://localhost:3000/api/tiempo-donosti')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('tiempo').innerHTML = `
+      <p>Temperatura: ${data.temperatura} °C</p>
+      <p>Humedad: ${data.humedad} %</p>
+      <p>Presión: ${data.presion} hPa</p>
+    `;
+  })
+  .catch(error => {
+    document.getElementById('tiempo').innerHTML = `Error al cargar los datos: ${error}`;
+  });

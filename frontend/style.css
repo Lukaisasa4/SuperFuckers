@@ -1,100 +1,71 @@
-/* Fuente base y fondo general */
-body {
-  background-image: url('https://static.vecteezy.com/system/resources/previews/009/205/514/non_2x/meteorological-department-cloudy-sky-stormy-weather-background-and-wallpaper-free-photo.jpeg'); /* o una URL directa */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* Estilo bonito y moderno */
+/* Reset básico */
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #dcdcdc; /* Gris claro */
-  color: #000000;
-  min-height: 100vh;
-
-
-  background-size: cover;
-  color: #ffffff;
-  min-height: 100vh;
-  backdrop-filter: blur(3px);
+  box-sizing: border-box;
+}
+body {
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-/* Contenedor principal */
-.container {
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 15px;
-  padding: 30px;
-  margin-top: 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+h1, h2, h3 {
+  color: #ff6f61;
+  letter-spacing: 1px;
+  margin-bottom: 0.5em;
 }
 
-/* Encabezado */
-header h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-left: 10px;
-  color: #ffffff;
+a {
+  color: #ff6f61;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-.lead {
-  color: #dddddd;
-  font-weight: 300;
-  margin-top: 10px;
+a:hover {
+  color: #d72660;
 }
 
-/* Bandera */
-.basque-flag {
-  width: 50px;
-  height: auto;
-  margin-right: 10px;
-}
-
-/* Buscador */
-.input-group input {
-  border-radius: 10px 0 0 10px;
-}
-.input-group .btn {
-  border-radius: 0 10px 10px 0;
-}
-
-/* Botones de ciudades */
-button.btn-outline-light {
-  border: 1px solid #ffffff;
-  color: #ffffff;
-  background-color: transparent;
-  transition: all 0.3s ease-in-out;
-}
-button.btn-outline-light:hover {
-  background-color: #ffffff;
-  color: #000000;
-  transform: scale(1.05);
-}
-
-/* Tarjeta del tiempo */
-.weather-card {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+button {
+  background: #ff6f61;
   color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7em 1.5em;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 111, 97, 0.15);
+  transition: background 0.2s;
 }
 
-/* GIF de lluvia */
-.weather-card img.lluvia-gif {
+button:hover {
+  background: #d72660;
+}
+
+.container {
+  max-width: 800px;
+  margin: 2em auto;
+  background: rgba(255,255,255,0.85);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 2em;
+}
+
+input, textarea {
+  border: 1px solid #ffb199;
+  border-radius: 8px;
+  padding: 0.6em;
+  font-size: 1em;
+  margin-bottom: 1em;
   width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  transition: border 0.2s;
 }
 
-/* Footer */
-.footer {
-  text-align: center;
-  color: #cccccc;
-  margin-top: 40px;
-  font-size: 0.9rem;
-  padding-bottom: 20px;
+input:focus, textarea:focus {
+  border-color: #ff6f61;
+  outline: none;
 }
