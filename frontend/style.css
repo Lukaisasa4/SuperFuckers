@@ -7,7 +7,11 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to right, #6a11cb, #2575fc);
+  background-image: url('meteorological-department-cloudy-sky-stormy-weather-background-and-wallpaper-free-photo.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
   color: #333;
   padding: 0;
   text-align: center;
@@ -156,18 +160,25 @@ footer a:hover {
 
 .cuadro-tiempo,
 .cuadro-sol {
-  background: rgba(0, 255, 255, 0.15); /* mismo color para todos los cuadros */
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
-  padding: 24px 28px;
+  background: rgba(255, 255, 255, 0.22); /* blanco translúcido */
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  padding: 28px 32px;
   min-width: 220px;
   max-width: 340px;
   color: #00363a;
   font-size: 1.15em;
   text-align: center;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(0, 255, 255, 0.18);
   margin-bottom: 24px;
   flex: 1 1 220px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.cuadro-tiempo:hover,
+.cuadro-sol:hover {
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.22);
+  transform: translateY(-4px) scale(1.03);
 }
 
 /* Opcional: alineación a la izquierda y derecha en desktop */
@@ -188,6 +199,7 @@ footer a:hover {
   .cuadro-tiempo, .cuadro-sol {
     max-width: 95vw;
     text-align: center;
+    gap: 16px;
   }
 }
 
@@ -209,4 +221,17 @@ footer a:hover {
   .weather-card {
     width: 90%;
   }
+}
+
+.grafico-temp-container {
+  background: rgba(20, 20, 30, 0.75);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  padding: 32px 16px;
+  margin: 0 auto 32px auto;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
