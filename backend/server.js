@@ -5,7 +5,6 @@ const fetch = require('node-fetch');
 const app = express();
 app.use(cors());
 
-// Lista de ciudades reducida a Pasaia, Vitoria y Bilbao
 const cities = {
   donostia: { name: "Donostia", latitude: 43.3128, longitude: -1.9750 },
   pasaia: { name: "Pasaia", latitude: 43.3256, longitude: -1.9261 },
@@ -13,8 +12,6 @@ const cities = {
   vitoria: { name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6727 }
 };
 
-
-// Mapeo de códigos de clima a descripción y emoji
 const weatherMap = {
   0: { desc: "Despejado", emoji: "☀️" },
   1: { desc: "Principalmente despejado", emoji: "🌤️" },
@@ -55,64 +52,43 @@ function getClosestHourIndex(times) {
   return idx;
 }
 
-// Ruta para obtener el tiempo de las ciudades seleccionadas
-app.get('/api/tiempo-ciudades', async (req, res) => {
-  try {
-    const results = {};
-
-    await Promise.all(Object.entries(cities).map(async ([key, city]) => {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=relative_humidity_2m,pressure_msl&timezone=Europe%2FMadrid`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      const idx = getClosestHourIndex(data.hourly.time);
-      const weatherInfo = getWeatherDescription(data.current_weather?.weathercode);
-
-      results[key] = {
-        nombre: city.name,
-        temperatura: data.current_weather?.temperature ?? null,
-        humedad: idx !== -1 ? data.hourly.relative_humidity_2m[idx] : null,
-        presion: idx !== -1 ? data.hourly.pressure_msl[idx] : null,
-        estado: `${weatherInfo.emoji} ${weatherInfo.desc}`
-      };
-    }));
-
-    res.json(results);
-  } catch (error) {
-    res.status(500).json({ error: 'Error interno del servidor' });
+// Express route to get weather info for a city
+app.get('/api/tiempo-:ciudad', async (req, res) => {
+  const ciudad = req.params.ciudad.toLowerCase();
+  const coords = cities[ciudad];
+  if (!coords) {
+    return res.status(404).json({ error: 'Ciudad no encontrada' });
   }
-});
 
-// Ruta para Donosti con histórico y predicción (si la quieres mantener, sino puedes borrarla)
-app.get('/api/tiempo-donosti', async (req, res) => {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m&timezone=Europe%2FMadrid`;
+
   try {
-    const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.3128&longitude=-1.9750&hourly=temperature_2m,relative_humidity_2m,pressure_msl&current_weather=true&past_days=7&forecast_days=7&timezone=Europe%2FMadrid');
-    const data = await response.json();
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Error al obtener datos del tiempo');
+    }
+    const datos = await response.json();
 
-    const idx = getClosestHourIndex(data.hourly.time);
+    const clima = datos.current_weather || {};
+    const daily = datos.daily || {};
 
-    const temperatura_actual = data.current_weather?.temperature ?? null;
-    const humedad_actual = idx !== -1 ? data.hourly.relative_humidity_2m[idx] : null;
-    const presion_actual = idx !== -1 ? data.hourly.pressure_msl[idx] : null;
-
-    const fechas = data.hourly.time;
-    const temperaturas = data.hourly.temperature_2m;
-    const humedades = data.hourly.relative_humidity_2m;
-    const presiones = data.hourly.pressure_msl;
+    const weatherDesc = getWeatherDescription(clima.weathercode);
 
     res.json({
-      temperatura_actual,
-      humedad_actual,
-      presion_actual,
-      fechas,
-      temperaturas,
-      humedades,
-      presiones
+      temperatura: clima.temperature,
+      viento: clima.windspeed,
+      estado: weatherDesc.desc,
+      emoji: weatherDesc.emoji,
+      maxima: daily.temperature_2m_max ? daily.temperature_2m_max[0] : null,
+      minima: daily.temperature_2m_min ? daily.temperature_2m_min[0] : null,
+      salidaSol: daily.sunrise ? daily.sunrise[0] : null,
+      puestaSol: daily.sunset ? daily.sunset[0] : null
     });
-  } catch (error) {
-    res.status(500).json({error: 'Error interno del servidor'});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
+
 
 app.listen(3001, () => {
   console.log('Servidor backend corriendo en http://localhost:3001');
