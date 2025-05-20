@@ -34,14 +34,14 @@
         <div class="descripcion">Cargando...</div>
       </div>
       <div class="info">
-        <p><strong>Temperatura:</strong> <span class="temperatura"></span> °C</p>
-        <p><strong>Humedad:</strong> <span class="humedad"></span> %</p>
-        <p><strong>Presión:</strong> <span class="presion"></span> hPa</p>
-        <p><strong>Viento:</strong> <span class="viento"></span> km/h</p>
-        <p><strong>Máxima:</strong> <span class="maxima"></span> °C</p>
-        <p><strong>Mínima:</strong> <span class="minima"></span> °C</p>
-        <p><strong>Salida del Sol:</strong> <span class="salida-sol"></span></p>
-        <p><strong>Puesta del Sol:</strong> <span class="puesta-sol"></span></p>
+        <p><strong>Temperatura:</strong> <span class="temperatura">...</span> °C</p>
+        <p><strong>Humedad:</strong> <span class="humedad">...</span> %</p>
+        <p><strong>Presión:</strong> <span class="presion">...</span> hPa</p>
+        <p><strong>Viento:</strong> <span class="viento">...</span> km/h</p>
+        <p><strong>Máxima:</strong> <span class="maxima">...</span> °C</p>
+        <p><strong>Mínima:</strong> <span class="minima">...</span> °C</p>
+        <p><strong>Salida del Sol:</strong> <span class="salida-sol">...</span></p>
+        <p><strong>Puesta del Sol:</strong> <span class="puesta-sol">...</span></p>
       </div>
     </div>
   </section>
@@ -50,96 +50,21 @@
   <section class="grafico-container">
     <h2>Previsión Horaria</h2>
     <canvas id="graficoTemp"></canvas>
+    <div class="cuadro-tiempo" style="margin: 32px auto 0 auto; max-width: 500px;">
+      <p><strong>Información adicional:</strong></p>
+      <p>Aquí puedes mostrar detalles, resumen, advertencias o cualquier dato relevante sobre la previsión horaria.</p>
+    </div>
   </section>
 
   <!-- Footer -->
   <footer>
     <p>Datos proporcionados por <a href="https://opendata.euskalmet.eus" target="_blank">Euskalmet</a>.</p>
   </footer>
+</body>
+</html>  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Scripts -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const estadoMap = {
-      'soleado': { emoji: '☀️', texto: 'Soleado' },
-      'nubes': { emoji: '⛅', texto: 'Nublado' },
-      'lluvia': { emoji: '🌧️', texto: 'Lluvia' },
-      'tormenta': { emoji: '⛈️', texto: 'Tormenta' },
-      'niebla': { emoji: '🌫️', texto: 'Niebla' },
-      'nieve': { emoji: '❄️', texto: 'Nieve' },
-      'despejado': { emoji: '🌤️', texto: 'Despejado' }
-    };
-
-    function mostrarTiempo(ciudad) {
-      document.querySelector(".descripcion").textContent = "Cargando...";
-      document.querySelector(".emoji").textContent = "🌦️";
-
-      fetch(`http://localhost:3001/api/tiempo-${ciudad}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Error en la respuesta');
-          return res.json();
-        })
-        .then(data => {
-          const estado = estadoMap[data.estado] || { emoji: '❓', texto: data.estado || 'Desconocido' };
-          document.querySelector(".emoji").textContent = estado.emoji;
-          document.querySelector(".descripcion").textContent = estado.texto;
-          document.querySelector(".temperatura").textContent = data.temperatura;
-          document.querySelector(".humedad").textContent = data.humedad;
-          document.querySelector(".presion").textContent = data.presion;
-          document.querySelector(".viento").textContent = data.viento;
-          document.querySelector(".maxima").textContent = data.maxima;
-          document.querySelector(".minima").textContent = data.minima;
-          document.querySelector(".salida-sol").textContent = data.salidaSol;
-          document.querySelector(".puesta-sol").textContent = data.puestaSol;
-        })
-        .catch(err => {
-          document.querySelector(".descripcion").textContent = 'Error: ' + err.message;
-        });
-    }
-
-    function cargarGrafico(ciudad) {
-      fetch(`http://localhost:3001/api/tiempo-${ciudad}-horario`)
-        .then(res => res.json())
-        .then(hourly => {
-          const labels = hourly.time;
-          const temps = hourly.temperature_2m;
-
-          const ctx = document.getElementById('graficoTemp').getContext('2d');
-          if (window.myChart) {
-            window.myChart.destroy(); // limpiar gráfico anterior
-          }
-
-          window.myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Temperatura (°C)',
-                data: temps,
-                borderColor: '#ff6f61',
-                backgroundColor: 'rgba(255,111,97,0.1)',
-                fill: true
-              }]
-            },
-            options: {
-              scales: {
-                x: { display: false },
-                y: { beginAtZero: false }
-              }
-            }
-          });
-        });
-    }
-
-    document.getElementById('ciudad').addEventListener('change', function () {
-      const ciudad = this.value;
-      mostrarTiempo(ciudad);
-      cargarGrafico(ciudad);
-    });
-
-    // Carga por defecto para Donostia
-    mostrarTiempo('donosti');
-    cargarGrafico('donosti');
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

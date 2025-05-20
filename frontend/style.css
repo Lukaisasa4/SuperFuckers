@@ -7,7 +7,11 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to right, #6a11cb, #2575fc);
+  background-image: url('meteorological-department-cloudy-sky-stormy-weather-background-and-wallpaper-free-photo.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
   color: #333;
   padding: 0;
   text-align: center;
@@ -56,14 +60,15 @@ header p {
 /* Tiempo */
 #tiempo .weather-card {
   background-color: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  display: inline-block;
-  width: 100%;
-  max-width: 500px;
-  margin: 40px auto;
+  padding: 35px 50px;
+  border-radius: 32px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+  display: block;
+  width: 98vw;
+  max-width: 1400px;
+  margin: 60px auto 40px auto;
   text-align: left;
+  animation: fadeIn 1.5s ease-out;
 }
 
 .weather-card .estado {
@@ -143,8 +148,59 @@ footer a:hover {
   }
 }
 
-#tiempo .weather-card {
-  animation: fadeIn 1.5s ease-out;
+/* Cuadros para los datos */
+.cuadros-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.cuadro-tiempo,
+.cuadro-sol {
+  background: rgba(255, 255, 255, 0.22); /* blanco translúcido */
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  padding: 28px 32px;
+  min-width: 220px;
+  max-width: 340px;
+  color: #00363a;
+  font-size: 1.15em;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(0, 255, 255, 0.18);
+  margin-bottom: 24px;
+  flex: 1 1 220px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.cuadro-tiempo:hover,
+.cuadro-sol:hover {
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.22);
+  transform: translateY(-4px) scale(1.03);
+}
+
+/* Opcional: alineación a la izquierda y derecha en desktop */
+.cuadro-izquierda {
+  text-align: left;
+}
+.cuadro-derecha {
+  text-align: left;
+}
+
+/* Responsive para móviles */
+@media (max-width: 800px) {
+  .cuadros-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .cuadro-tiempo, .cuadro-sol {
+    max-width: 95vw;
+    text-align: center;
+    gap: 16px;
+  }
 }
 
 /* Responsive Design */
@@ -165,4 +221,17 @@ footer a:hover {
   .weather-card {
     width: 90%;
   }
+}
+
+.grafico-temp-container {
+  background: rgba(20, 20, 30, 0.75);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  padding: 32px 16px;
+  margin: 0 auto 32px auto;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
