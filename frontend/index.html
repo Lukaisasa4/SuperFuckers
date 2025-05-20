@@ -2,83 +2,62 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tiempo en Euskadi</title>
-  <style>
-    #buscador {
-      display: flex;
-      justify-content: center;
-      margin: 24px 0;
-    }
-    #buscador select {
-      font-size: 1em;
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    #tiempo {
-      background: #f0f4f8;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 24px;
-      max-width: 320px;
-      margin: 32px auto;
-      font-size: 1.2em;
-      color: #222;
-      text-align: center;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Tiempo en Euskadi</h1>
-  <div id="buscador">
-    <select id="ciudad">
-      <option value="donostia">Donostia</option>
-      <option value="pasaia">Pasaia</option>
-      <option value="bilbao">Bilbao</option>
-      <option value="vitoria">Vitoria</option>
-    </select>
-  </div>
-  <div id="tiempo">
-    <span style="font-size:2em;">🌦️</span>
-    <div style="margin-top: 12px;">Cargando...</div>
-  </div>
+  <!-- Encabezado -->
+  <header>
+    <div class="header-content">
+      <h1>🌦️ <span>Tiempo en Euskadi</span></h1>
+      <p>Consulta las previsiones meteorológicas en tiempo real de tu ciudad en Euskadi.</p>
+      <div id="buscador">
+        <select id="ciudad">
+          <option value="donosti">Donostia</option>
+          <option value="zarautz">Zarautz</option>
+          <option value="zumaia">Zumaia</option>
+          <option value="pasaia">Pasaia</option>
+          <option value="azpeitia">Azpeitia</option>
+          <option value="irun">Irun</option>
+        </select>
+      </div>
+    </div>
+  </header>
 
-  <script>
-    function mostrarTiempo(ciudad) {
-      const tiempoDiv = document.getElementById('tiempo');
-      tiempoDiv.innerHTML = '<span style="font-size:2em;">🌦️</span><div style="margin-top: 12px;">Cargando...</div>';
+  <!-- Sección de tiempo actual -->
+  <section id="tiempo">
+    <div class="weather-card">
+      <div class="estado">
+        <span class="emoji">🌦️</span>
+        <div class="descripcion">Cargando...</div>
+      </div>
+      <div class="info">
+        <p><strong>Temperatura:</strong> <span class="temperatura">...</span> °C</p>
+        <p><strong>Humedad:</strong> <span class="humedad">...</span> %</p>
+        <p><strong>Presión:</strong> <span class="presion">...</span> hPa</p>
+        <p><strong>Viento:</strong> <span class="viento">...</span> km/h</p>
+        <p><strong>Máxima:</strong> <span class="maxima">...</span> °C</p>
+        <p><strong>Mínima:</strong> <span class="minima">...</span> °C</p>
+        <p><strong>Salida del Sol:</strong> <span class="salida-sol">...</span></p>
+        <p><strong>Puesta del Sol:</strong> <span class="puesta-sol">...</span></p>
+      </div>
+    </div>
+  </section>
 
-      fetch('http://localhost:3001/api/tiempo-ciudades')
-        .then(res => {
-          if (!res.ok) throw new Error('Error en la respuesta');
-          return res.json();
-        })
-        .then(data => {
-          const ciudadData = data[ciudad];
-          if (!ciudadData) {
-            tiempoDiv.textContent = 'Ciudad no encontrada.';
-            return;
-          }
+  <!-- Sección de previsión horaria -->
+  <section class="grafico-container">
+    <h2>Previsión Horaria</h2>
+    <canvas id="graficoTemp"></canvas>
+  </section>
 
-          tiempoDiv.innerHTML = `
-            <div style="font-size:2em;">${ciudadData.estado}</div>
-            <div style="margin: 8px 0 16px 0;">${ciudadData.nombre}</div>
-            <p>Temperatura: ${ciudadData.temperatura} °C</p>
-            <p>Humedad: ${ciudadData.humedad} %</p>
-            <p>Presión: ${ciudadData.presion} hPa</p>
-          `;
-        })
-        .catch(err => {
-          tiempoDiv.textContent = 'Error al cargar los datos: ' + err.message;
-        });
-    }
+  <!-- Footer -->
+  <footer>
+    <p>Datos proporcionados por <a href="https://opendata.euskalmet.eus" target="_blank">Euskalmet</a>.</p>
+  </footer>
 
-    document.getElementById('ciudad').addEventListener('change', function() {
-      mostrarTiempo(this.value);
-    });
-
-    // Mostrar Donostia por defecto
-    mostrarTiempo('donostia');
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
