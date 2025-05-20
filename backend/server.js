@@ -2,19 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 
-// Inicializa la app y middlewares
 const app = express();
 app.use(cors());
 
-// Lista de ciudades con sus coordenadas
+// Lista de ciudades reducida a Pasaia, Vitoria y Bilbao
 const cities = {
   donostia: { name: "Donostia", latitude: 43.3128, longitude: -1.9750 },
-  zarautz: { name: "Zarautz", latitude: 43.2843, longitude: -2.1699 },
-  zumaia: { name: "Zumaia", latitude: 43.2956, longitude: -2.2572 },
   pasaia: { name: "Pasaia", latitude: 43.3256, longitude: -1.9261 },
-  azpeitia: { name: "Azpeitia", latitude: 43.1847, longitude: -2.2636 },
-  irun: { name: "Irun", latitude: 43.3390, longitude: -1.7894 }
+  bilbao: { name: "Bilbao", latitude: 43.2630, longitude: -2.9350 },
+  vitoria: { name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6727 }
 };
+
 
 // Mapeo de códigos de clima a descripción y emoji
 const weatherMap = {
@@ -35,30 +33,47 @@ const weatherMap = {
   82: { desc: "Chubascos violentos", emoji: "⛈️" }
 };
 
-// Función auxiliar
 function getWeatherDescription(code) {
   return weatherMap[code] || { desc: "Desconocido", emoji: "❓" };
 }
 
-// Ruta para obtener el tiempo de todas las ciudades
+function getClosestHourIndex(times) {
+  const now = new Date();
+  const nowHour = now.toISOString().slice(0, 13) + ":00";
+  let idx = times.findIndex(t => t === nowHour);
+  if (idx === -1) {
+    const nowTime = new Date(nowHour).getTime();
+    let minDiff = Infinity;
+    times.forEach((t, i) => {
+      const diff = Math.abs(new Date(t).getTime() - nowTime);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idx = i;
+      }
+    });
+  }
+  return idx;
+}
+
+// Ruta para obtener el tiempo de las ciudades seleccionadas
 app.get('/api/tiempo-ciudades', async (req, res) => {
   try {
-    const now = new Date();
-    const hour = now.getHours();
     const results = {};
 
     await Promise.all(Object.entries(cities).map(async ([key, city]) => {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=relative_humidity_2m,pressure_msl`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=relative_humidity_2m,pressure_msl&timezone=Europe%2FMadrid`;
       const response = await fetch(url);
       const data = await response.json();
 
+      const idx = getClosestHourIndex(data.hourly.time);
+      const weatherInfo = getWeatherDescription(data.current_weather?.weathercode);
+
       results[key] = {
         nombre: city.name,
-        temperatura: data.current_weather.temperature,
-        humedad: data.hourly.relative_humidity_2m[hour],
-        presion: data.hourly.pressure_msl[hour],
-        codigo: data.current_weather.weathercode,
-        descripcion: getWeatherDescription(data.current_weather.weathercode)
+        temperatura: data.current_weather?.temperature ?? null,
+        humedad: idx !== -1 ? data.hourly.relative_humidity_2m[idx] : null,
+        presion: idx !== -1 ? data.hourly.pressure_msl[idx] : null,
+        estado: `${weatherInfo.emoji} ${weatherInfo.desc}`
       };
     }));
 
@@ -68,15 +83,13 @@ app.get('/api/tiempo-ciudades', async (req, res) => {
   }
 });
 
-// Ruta para Donosti con histórico y predicción
+// Ruta para Donosti con histórico y predicción (si la quieres mantener, sino puedes borrarla)
 app.get('/api/tiempo-donosti', async (req, res) => {
   try {
     const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.3128&longitude=-1.9750&hourly=temperature_2m,relative_humidity_2m,pressure_msl&current_weather=true&past_days=7&forecast_days=7&timezone=Europe%2FMadrid');
     const data = await response.json();
 
-    const now = new Date();
-    const nowHour = now.toISOString().slice(0, 13) + ":00";
-    const idx = data.hourly.time.findIndex(t => t === nowHour);
+    const idx = getClosestHourIndex(data.hourly.time);
 
     const temperatura_actual = data.current_weather?.temperature ?? null;
     const humedad_actual = idx !== -1 ? data.hourly.relative_humidity_2m[idx] : null;

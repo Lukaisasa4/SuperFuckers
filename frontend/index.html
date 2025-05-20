@@ -32,12 +32,10 @@
   <h1>Tiempo en Euskadi</h1>
   <div id="buscador">
     <select id="ciudad">
-      <option value="donosti">Donostia</option>
-      <option value="zarautz">Zarautz</option>
-      <option value="zumaia">Zumaia</option>
+      <option value="donostia">Donostia</option>
       <option value="pasaia">Pasaia</option>
-      <option value="azpeitia">Azpeitia</option>
-      <option value="irun">Irun</option>
+      <option value="bilbao">Bilbao</option>
+      <option value="vitoria">Vitoria</option>
     </select>
   </div>
   <div id="tiempo">
@@ -46,36 +44,32 @@
   </div>
 
   <script>
-    const estadoMap = {
-      'soleado': { emoji: '☀️', texto: 'Soleado' },
-      'nubes': { emoji: '⛅', texto: 'Nublado' },
-      'lluvia': { emoji: '🌧️', texto: 'Lluvia' },
-      'tormenta': { emoji: '⛈️', texto: 'Tormenta' },
-      'niebla': { emoji: '🌫️', texto: 'Niebla' },
-      'nieve': { emoji: '❄️', texto: 'Nieve' },
-      'despejado': { emoji: '🌤️', texto: 'Despejado' }
-    };
-
     function mostrarTiempo(ciudad) {
-      document.getElementById('tiempo').innerHTML = '<span style="font-size:2em;">🌦️</span><div style="margin-top: 12px;">Cargando...</div>';
-      fetch(`http://localhost:3001/api/tiempo-${ciudad}`)
+      const tiempoDiv = document.getElementById('tiempo');
+      tiempoDiv.innerHTML = '<span style="font-size:2em;">🌦️</span><div style="margin-top: 12px;">Cargando...</div>';
+
+      fetch('http://localhost:3001/api/tiempo-ciudades')
         .then(res => {
           if (!res.ok) throw new Error('Error en la respuesta');
           return res.json();
         })
         .then(data => {
-          // Suponiendo que el backend devuelve { estado: 'lluvia', temperatura: 18, humedad: 80, presion: 1012 }
-          const estado = estadoMap[data.estado] || { emoji: '❓', texto: data.estado || 'Desconocido' };
-          document.getElementById('tiempo').innerHTML = `
-            <div style="font-size:2em;">${estado.emoji}</div>
-            <div style="margin: 8px 0 16px 0;">${estado.texto}</div>
-            <p>Temperatura: ${data.temperatura} °C</p>
-            <p>Humedad: ${data.humedad} %</p>
-            <p>Presión: ${data.presion} hPa</p>
+          const ciudadData = data[ciudad];
+          if (!ciudadData) {
+            tiempoDiv.textContent = 'Ciudad no encontrada.';
+            return;
+          }
+
+          tiempoDiv.innerHTML = `
+            <div style="font-size:2em;">${ciudadData.estado}</div>
+            <div style="margin: 8px 0 16px 0;">${ciudadData.nombre}</div>
+            <p>Temperatura: ${ciudadData.temperatura} °C</p>
+            <p>Humedad: ${ciudadData.humedad} %</p>
+            <p>Presión: ${ciudadData.presion} hPa</p>
           `;
         })
         .catch(err => {
-          document.getElementById('tiempo').textContent = 'Error al cargar los datos: ' + err.message;
+          tiempoDiv.textContent = 'Error al cargar los datos: ' + err.message;
         });
     }
 
@@ -84,64 +78,7 @@
     });
 
     // Mostrar Donostia por defecto
-    mostrarTiempo('donosti');
+    mostrarTiempo('donostia');
   </script>
 </body>
-</html>
-
-
-  <script>
-   fetch('http://localhost:3001/api/tiempo-donosti')
-      .then(res => {
-        if (!res.ok) throw new Error('Error en la respuesta');
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById('tiempo').innerHTML = `
-          <p>Temperatura: ${data.temperatura} °C</p>
-          <p>Humedad: ${data.humedad} %</p>
-          <p>Presión: ${data.presion} hPa</p>
-        `;
-      })
-      .catch(err => {
-        document.getElementById('tiempo').textContent = 'Error al cargar los datos: ' + err.message;
-      });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <script>
-  // script.js
-fetch('http://localhost:3001/api/tiempo-donosti')
-  .then(res => res.json())
-  .then(hourly => {
-    // Filtra los datos para la última semana y la siguiente
-    const labels = hourly.time; // array de fechas-horas
-    const temps = hourly.temperature_2m; // array de temperaturas
-
-    // Crea el gráfico
-    const ctx = document.getElementById('graficoTemp').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Temperatura (°C)',
-          data: temps,
-          borderColor: '#ff6f61',
-          backgroundColor: 'rgba(255,111,97,0.1)',
-          fill: true,
-        }]
-      },
-      options: {
-        scales: {
-          x: { display: false },
-          y: { beginAtZero: false }
-        }
-      }
-    });
-  });
-</script>
-<canvas id="graficoTemp" width="600" height="300"></canvas>
-</body>
-
 </html>
