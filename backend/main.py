@@ -1,38 +1,21 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 import requests
 from datetime import datetime
-
-def obtener_descripcion_weathercode(codigo):
-    # Algunos códigos de Open-Meteo pueden ser combinaciones o no estar en el diccionario
-    if codigo in WEATHER_CODES:
-        return WEATHER_CODES[codigo]
-    # Rango de nubes (1-3)
-    if 1 <= codigo <= 3:
-        return WEATHER_CODES[3]
-    # Llovizna
-    if 51 <= codigo <= 55:
-        return WEATHER_CODES[55]
-    # Lluvia
-    if 61 <= codigo <= 65:
-        return WEATHER_CODES[65]
-    # Chubascos
-    if 80 <= codigo <= 82:
-        return WEATHER_CODES[82]
-    return ("Desconocido", "❓")
 
 app = FastAPI()
 
 CIUDADES = {
-    "Bilbao": {"lat": 43.2630, "lon": -2.9350, "alt": 19},
-    "Vitoria-Gasteiz": {"lat": 42.8467, "lon": -2.6716, "alt": 525},
-    "Donostia / San Sebastián": {"lat": 43.3128, "lon": -1.9748, "alt": 6},
-    "Barakaldo": {"lat": 43.2956, "lon": -2.9972, "alt": 39},
-    "Getxo": {"lat": 43.3569, "lon": -3.0116, "alt": 50},
-    "Portugalete": {"lat": 43.3204, "lon": -3.0197, "alt": 20},
-    "Irun": {"lat": 43.3381, "lon": -1.7890, "alt": 10},
-    "Basauri": {"lat": 43.2386, "lon": -2.8852, "alt": 70},
-    "Durango": {"lat": 43.1704, "lon": -2.6336, "alt": 121},
-    "Eibar": {"lat": 43.1849, "lon": -2.4713, "alt": 121}
+    "bilbao": {"lat": 43.2630, "lon": -2.9350, "alt": 19},
+    "vitoria-gasteiz": {"lat": 42.8467, "lon": -2.6716, "alt": 525},
+    "donostia": {"lat": 43.3128, "lon": -1.9748, "alt": 6},
+    "barakaldo": {"lat": 43.2956, "lon": -2.9972, "alt": 39},
+    "getxo": {"lat": 43.3569, "lon": -3.0116, "alt": 50},
+    "portugalete": {"lat": 43.3204, "lon": -3.0197, "alt": 20},
+    "irun": {"lat": 43.3381, "lon": -1.7890, "alt": 10},
+    "basauri": {"lat": 43.2386, "lon": -2.8852, "alt": 70},
+    "durango": {"lat": 43.1704, "lon": -2.6336, "alt": 121},
+    "eibar": {"lat": 43.1849, "lon": -2.4713, "alt": 121}
 }
 
 WEATHER_CODES = {
@@ -53,11 +36,18 @@ WEATHER_CODES = {
     82: ("Chubascos violentos", "⛈️")
 }
 
-def obtener_indice_hora_actual(lista_tiempos):
-    ahora = datetime.now().strftime("%Y-%m-%dT%H:00")
-    if ahora in lista_tiempos:
-        return lista_tiempos.index(ahora)
-    return 0  # Fallback
+def obtener_descripcion_weathercode(codigo):
+    if codigo in WEATHER_CODES:
+        return WEATHER_CODES[codigo]
+    if 1 <= codigo <= 3:
+        return WEATHER_CODES[3]
+    if 51 <= codigo <= 55:
+        return WEATHER_CODES[55]
+    if 61 <= codigo <= 65:
+        return WEATHER_CODES[65]
+    if 80 <= codigo <= 82:
+        return WEATHER_CODES[82]
+    return ("Desconocido", "❓")
 
 @app.get("/api/tiempo-ciudades")
 def obtener_tiempo_ciudades():
@@ -79,10 +69,12 @@ def obtener_tiempo_ciudades():
             datos = response.json()
 
             clima_actual = datos.get("current_weather", {})
-            indice_actual = obtener_indice_hora_actual(datos["hourly"]["time"])
+            time_list = datos["hourly"]["time"]
+            ahora = datetime.now().strftime("%Y-%m-%dT%H:00")
+            indice_actual = time_list.index(ahora) if ahora in time_list else 0
 
             cod_clima = clima_actual.get("weathercode", -1)
-            descripcion, emoji = WEATHER_CODES.get(cod_clima, ("Desconocido", "❓"))
+            descripcion, emoji = obtener_descripcion_weathercode(cod_clima)
 
             resultados[ciudad] = {
                 "🌦️ Estado": f"{emoji} {descripcion}",
@@ -99,3 +91,42 @@ def obtener_tiempo_ciudades():
             resultados[ciudad] = {"error": str(e)}
 
     return resultados
+
+@app.get("/api/semana-{ciudad}")
+def obtener_semana(ciudad: str):
+    ciudad = ciudad.lower()
+    if ciudad not in CIUDADES:
+        return JSONResponse(status_code=404, content={"error": "Ciudad no encontrada"})
+
+    coords = CIUDADES[ciudad]
+    url = (
+        f"https://api.open-meteo.com/v1/forecast"
+        f"?latitude={coords['lat']}&longitude={coords['lon']}"
+        f"&daily=temperature_2m_max,temperature_2m_min,weathercode"
+        f"&timezone=Europe%2FMadrid"
+    )
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        datos = response.json()
+
+        dias = datos["daily"]["time"]
+        maximas = datos["daily"]["temperature_2m_max"]
+        minimas = datos["daily"]["temperature_2m_min"]
+        codigos = datos["daily"]["weathercode"]
+
+        resultado = []
+        for i in range(7):
+            descripcion, emoji = obtener_descripcion_weathercode(codigos[i])
+            resultado.append({
+                "fecha": dias[i],
+                "estado": f"{emoji} {descripcion}",
+                "max": f"{maximas[i]} °C",
+                "min": f"{minimas[i]} °C"
+            })
+
+        return resultado
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Encabezado -->
   <header>
@@ -16,17 +17,16 @@
       <div id="buscador">
        <select id="ciudad">
           <option value="donostia-san-sebastian">Donostia / San Sebastián</option>
-                <option value="bilbao">Bilbao</option>
-                <option value="vitoria-gasteiz">Vitoria-Gasteiz</option>
-                <option value="barakaldo">Barakaldo</option>
-                <option value="getxo">Getxo</option>
-                <option value="portugalete">Portugalete</option>
-                <option value="irun">Irun</option>
-                <option value="basauri">Basauri</option>
-                <option value="durango">Durango</option>
-                <option value="eibar">Eibar</option>
-              </select>
-
+          <option value="bilbao">Bilbao</option>
+          <option value="vitoria-gasteiz">Vitoria-Gasteiz</option>
+          <option value="barakaldo">Barakaldo</option>
+          <option value="getxo">Getxo</option>
+          <option value="portugalete">Portugalete</option>
+          <option value="irun">Irun</option>
+          <option value="basauri">Basauri</option>
+          <option value="durango">Durango</option>
+          <option value="eibar">Eibar</option>
+        </select>
       </div>
     </div>
   </header>
@@ -73,51 +73,103 @@
     </div>
   </section>
 
+  <!-- Sección de Previsión Semanal -->
+  <section id="semana">
+    <h2>Previsión Semanal</h2>
+    <div class="semana-container" id="prevision-semanal">
+      <p>Cargando previsión...</p>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer>
     <p>Datos proporcionados por <a href="https://opendata.euskalmet.eus" target="_blank">Euskalmet</a>.</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
-    const descripcion = document.querySelector('.descripcion');
-    const temperatura = document.querySelector('.temperatura');
-    const humedad = document.querySelector('.humedad');
-    const presion = document.querySelector('.presion');
-    const viento = document.querySelector('.viento');
-    const maxima = document.querySelector('.maxima');
-    const minima = document.querySelector('.minima');
-    const salidaSol = document.querySelector('.salida-sol');
-    const puestaSol = document.querySelector('.puesta-sol');
+    document.addEventListener("DOMContentLoaded", () => {
+      // Variables elementos DOM
+      const descripcion = document.querySelector('.descripcion');
+      const temperatura = document.querySelector('.temperatura');
+      const humedad = document.querySelector('.humedad');
+      const presion = document.querySelector('.presion');
+      const viento = document.querySelector('.viento');
+      const maxima = document.querySelector('.maxima');
+      const minima = document.querySelector('.minima');
+      const salidaSol = document.querySelector('.salida-sol');
+      const puestaSol = document.querySelector('.puesta-sol');
 
-    async function cargarTiempo(ciudad) {
-      try {
-        const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
-        const datos = await response.json();
+      const selector = document.getElementById('ciudad');
+      const contenedorPrevision = document.getElementById("prevision-semanal");
 
-        descripcion.textContent = datos.estado ?? "N/A";
-        temperatura.textContent = datos.temperatura ?? "...";
-        humedad.textContent = datos.humedad ?? "...";
-        presion.textContent = datos.presion ?? "...";
-        viento.textContent = datos.viento ?? "...";
-        maxima.textContent = datos.maxima ?? "...";
-        minima.textContent = datos.minima ?? "...";
-        salidaSol.textContent = datos.salidaSol ?? "...";
-        puestaSol.textContent = datos.puestaSol ?? "...";
-      } catch (error) {
-        console.error("Error al obtener el tiempo:", error);
-        descripcion.textContent = "Error al cargar datos";
+      // Simulación de datos semanales (puedes modificar o adaptar luego)
+      function datosSemanalSimulados() {
+        return [
+          { dia: "Lun", min: 10, max: 15, estado: "🌤️ Soleado" },
+          { dia: "Mar", min: 9, max: 14, estado: "⛅ Parcialmente nublado" },
+          { dia: "Mié", min: 8, max: 13, estado: "🌧️ Lluvias" },
+          { dia: "Jue", min: 7, max: 12, estado: "🌦️ Chubascos" },
+          { dia: "Vie", min: 8, max: 14, estado: "☀️ Soleado" },
+          { dia: "Sáb", min: 9, max: 15, estado: "🌤️ Soleado" },
+          { dia: "Dom", min: 10, max: 16, estado: "🌧️ Lluvias dispersas" }
+        ];
       }
-    }
 
-    // Cargar al inicio
-    const selector = document.getElementById('ciudad');
-    cargarTiempo(selector.value);
+      async function cargarTiempo(ciudad) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
+          const datos = await response.json();
 
-    // Al cambiar ciudad
-    selector.addEventListener('change', () => {
-      const ciudad = selector.value;
-      cargarTiempo(ciudad);
+          descripcion.textContent = datos.estado ?? "N/A";
+          temperatura.textContent = datos.temperatura ?? "...";
+          humedad.textContent = datos.humedad ?? "...";
+          presion.textContent = datos.presion ?? "...";
+          viento.textContent = datos.viento ?? "...";
+          maxima.textContent = datos.maxima ?? "...";
+          minima.textContent = datos.minima ?? "...";
+          salidaSol.textContent = datos.salidaSol ?? "...";
+          puestaSol.textContent = datos.puestaSol ?? "...";
+
+          return datos;  // devolver datos para usar en la previsión semanal
+        } catch (error) {
+          console.error("Error al obtener el tiempo:", error);
+          descripcion.textContent = "Error al cargar datos";
+          return null;
+        }
+      }
+
+      async function cargarPrevisionSemanal(ciudad) {
+        // Aquí usamos datos simulados
+        const dias = datosSemanalSimulados();
+
+        let html = `<div class="semana-grid" style="display:flex; justify-content: space-around; max-width: 600px; margin: auto;">`;
+
+        dias.forEach(dia => {
+          html += `
+            <div class="dia" style="text-align:center; padding: 10px; border: 1px solid #ccc; border-radius: 8px; min-width: 80px;">
+              <p><strong>${dia.dia}</strong></p>
+              <p>${dia.estado}</p>
+              <p>${dia.min}° / ${dia.max}°</p>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+
+        contenedorPrevision.innerHTML = html;
+      }
+
+      // Cuando cambia la ciudad, cargar datos y previsión semanal
+      selector.addEventListener('change', async () => {
+        const ciudad = selector.value;
+        await cargarTiempo(ciudad);
+        await cargarPrevisionSemanal(ciudad);
+      });
+
+      // Al cargar la página, disparar el cambio para cargar datos
+      selector.dispatchEvent(new Event("change"));
     });
   </script>
 </body>

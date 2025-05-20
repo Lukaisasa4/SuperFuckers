@@ -230,3 +230,18 @@ footer a:hover {
   min-width: 2200px; /* Suficiente para mostrar 24 horas claramente */
   display: block;
 }
+
+.semana-grid {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.dia {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  width: 100px;
+  margin: 5px;
+}
