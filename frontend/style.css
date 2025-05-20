@@ -203,29 +203,11 @@ footer a:hover {
   }
 }
 
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-  header h1 {
-    font-size: 2.2em;
-  }
-
-  header p {
-    font-size: 1em;
-  }
-
-  #buscador select {
-    width: 80%;
-    font-size: 1em;
-  }
-
-  .weather-card {
-    width: 90%;
-  }
-}
-
+/* Gráfico con scroll horizontal para todas las horas */
 .grafico-temp-container {
   background: rgba(20, 20, 30, 0.75);
-  border-radius: 20px;
+  border-radius: 32px;
+  border: 2.5px solid rgba(0,255,255,0.25);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
   padding: 32px 16px;
   margin: 0 auto 32px auto;
@@ -234,4 +216,17 @@ footer a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.grafico-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.grafico-scroll-x canvas {
+  min-width: 2200px; /* Suficiente para mostrar 24 horas claramente */
+  display: block;
 }

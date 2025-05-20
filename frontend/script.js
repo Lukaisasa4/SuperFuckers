@@ -23,3 +23,33 @@ fetch('http://localhost:3000/api/tiempo-donosti')
       </div>
     `;
   });
+// Función para obtener el índice de la hora más cercana
+
+// Ejemplo de datos
+const horas = Array.from({length: 24}, (_, i) => `${i}:00`);
+const datos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+const ctx = document.getElementById('graficoTemp').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: horas,
+    datasets: [{
+      label: 'Temperatura',
+      data: datos,
+      borderColor: 'rgba(0,180,255,1)',
+      backgroundColor: 'rgba(0,180,255,0.2)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: false, // Importante para scroll
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: { ticks: { color: '#fff' } },
+      y: { ticks: { color: '#fff' } }
+    }
+  }
+});
