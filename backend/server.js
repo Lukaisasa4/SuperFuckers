@@ -53,32 +53,38 @@ function getClosestHourIndex(times) {
 }
 
 // Express route to get weather info for a city
-app.get('/api/tiempo-:ciudad', async (req, res) => {
+app.get("/api/tiempo-:ciudad", async (req, res) => {
   const ciudad = req.params.ciudad.toLowerCase();
   const coords = cities[ciudad];
   if (!coords) {
-    return res.status(404).json({ error: 'Ciudad no encontrada' });
+    return res.status(404).json({ error: "Ciudad no encontrada" });
   }
 
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m&timezone=Europe%2FMadrid`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m,relative_humidity_2m,pressure_msl&timezone=Europe%2FMadrid`;
 
   try {
     const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Error al obtener datos del tiempo');
-    }
+    if (!response.ok) throw new Error("Error al obtener datos del clima");
     const datos = await response.json();
-
     const clima = datos.current_weather || {};
     const daily = datos.daily || {};
+    const hourly = datos.hourly || {};
 
-    const weatherDesc = getWeatherDescription(clima.weathercode);
+    // Find the closest hour index for humidity and pressure
+    let humedad = null;
+    let presion = null;
+    if (hourly.time && hourly.relative_humidity_2m && hourly.pressure_msl) {
+      const idx = getClosestHourIndex(hourly.time);
+      humedad = hourly.relative_humidity_2m[idx];
+      presion = hourly.pressure_msl[idx];
+    }
 
     res.json({
       temperatura: clima.temperature,
       viento: clima.windspeed,
-      estado: weatherDesc.desc,
-      emoji: weatherDesc.emoji,
+      estadoCodigo: clima.weathercode,
+      humedad: humedad,
+      presion: presion,
       maxima: daily.temperature_2m_max ? daily.temperature_2m_max[0] : null,
       minima: daily.temperature_2m_min ? daily.temperature_2m_min[0] : null,
       salidaSol: daily.sunrise ? daily.sunrise[0] : null,

@@ -15,12 +15,10 @@
       <p>Consulta las previsiones meteorológicas en tiempo real de tu ciudad en Euskadi.</p>
       <div id="buscador">
         <select id="ciudad">
-          <option value="donosti">Donostia</option>
+          <option value="donostia">Donostia</option>
           <option value="vitoria-gasteiz">Vitoria-Gasteiz</option>
           <option value="bilbao">Bilbao</option>
           <option value="pasaia">Pasaia</option>
-         
-        
         </select>
       </div>
     </div>
@@ -60,11 +58,48 @@
   <footer>
     <p>Datos proporcionados por <a href="https://opendata.euskalmet.eus" target="_blank">Euskalmet</a>.</p>
   </footer>
-</body>
-</html>  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js"></script>
+  <script>
+    const descripcion = document.querySelector('.descripcion');
+    const temperatura = document.querySelector('.temperatura');
+    const humedad = document.querySelector('.humedad');
+    const presion = document.querySelector('.presion');
+    const viento = document.querySelector('.viento');
+    const maxima = document.querySelector('.maxima');
+    const minima = document.querySelector('.minima');
+    const salidaSol = document.querySelector('.salida-sol');
+    const puestaSol = document.querySelector('.puesta-sol');
+
+    async function cargarTiempo(ciudad) {
+      try {
+        const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
+        const datos = await response.json();
+
+        descripcion.textContent = datos.estado ?? "N/A";
+        temperatura.textContent = datos.temperatura ?? "...";
+        humedad.textContent = datos.humedad ?? "...";
+        presion.textContent = datos.presion ?? "...";
+        viento.textContent = datos.viento ?? "...";
+        maxima.textContent = datos.maxima ?? "...";
+        minima.textContent = datos.minima ?? "...";
+        salidaSol.textContent = datos.salidaSol ?? "...";
+        puestaSol.textContent = datos.puestaSol ?? "...";
+      } catch (error) {
+        console.error("Error al obtener el tiempo:", error);
+        descripcion.textContent = "Error al cargar datos";
+      }
+    }
+
+    // Cargar al inicio
+    const selector = document.getElementById('ciudad');
+    cargarTiempo(selector.value);
+
+    // Al cambiar ciudad
+    selector.addEventListener('change', () => {
+      const ciudad = selector.value;
+      cargarTiempo(ciudad);
+    });
+  </script>
 </body>
 </html>
