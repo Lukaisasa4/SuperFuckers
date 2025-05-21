@@ -6,33 +6,6 @@
   <title>Tiempo en Euskadi</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>
-    .grafico-container {
-      display: block;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      height: 450px;
-      margin: 50px 0;
-    }
-    #weatherChart {
-      display: block;
-      margin: 0 auto;
-      max-width: 700px;
-      width: 100%;
-      height: 350px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-      padding: 16px;
-    }
-    @media (max-width: 800px) {
-      #weatherChart {
-        max-width: 98vw;
-        height: 250px;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -54,6 +27,7 @@
           <option value="durango">Durango</option>
           <option value="eibar">Eibar</option>
         </select>
+        <button id="usar-ubicacion">📍 Usar mi ubicación</button>
       </div>
     </div>
   </header>
@@ -71,15 +45,18 @@
             <p><strong>Temperatura:</strong> <span class="temperatura">...</span> °C</p>
             <p><strong>Máxima:</strong> <span class="maxima">...</span> °C</p>
             <p><strong>Mínima:</strong> <span class="minima">...</span> °C</p>
+            <p><strong>Sensación térmica:</strong> <span class="sensacion">...</span> °C</p>
           </div>
           <div class="cuadro-tiempo cuadro-derecha">
             <p><strong>Humedad:</strong> <span class="humedad">...</span> %</p>
             <p><strong>Presión:</strong> <span class="presion">...</span> hPa</p>
             <p><strong>Viento:</strong> <span class="viento">...</span> km/h</p>
+            <p><strong>Índice UV:</strong> <span class="uv">...</span></p>
           </div>
           <div class="cuadro-sol">
             <p><strong>Salida del Sol:</strong> <span class="salida-sol">...</span></p>
             <p><strong>Puesta del Sol:</strong> <span class="puesta-sol">...</span></p>
+            <p class="local-time">Hora local: <span id="hora-local">--:--</span></p>
           </div>
         </div>
       </div>
@@ -89,7 +66,15 @@
   <!-- Sección de previsión horaria (solo la gráfica, centrada) -->
   <section class="grafico-container">
     <h2>Previsión Horaria</h2>
-    <canvas id="weatherChart"></canvas>
+    <div class="grafico-temp-container">
+      <div class="grafico-scroll-x">
+        <canvas id="graficoTemp" width="2400" height="350"></canvas>
+      </div>
+    </div>
+    <div class="cuadro-tiempo" style="margin: 32px auto 0 auto; max-width: 500px;">
+      <p><strong>Información adicional:</strong></p>
+      <p>Aquí puedes mostrar detalles, resumen, advertencias o cualquier dato relevante sobre la previsión horaria.</p>
+    </div>
   </section>
 
   <!-- Sección de Previsión Semanal -->
@@ -107,7 +92,6 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -120,47 +104,14 @@
       const minima = document.querySelector('.minima');
       const salidaSol = document.querySelector('.salida-sol');
       const puestaSol = document.querySelector('.puesta-sol');
+      const sensacion = document.querySelector('.sensacion');
+      const uv = document.querySelector('.uv');
+      const horaLocal = document.getElementById('hora-local');
 
       const selector = document.getElementById('ciudad');
       const contenedorPrevision = document.getElementById("prevision-semanal");
 
-      // Coordenadas por ciudad
-      const coordenadasPorCiudad = {
-        "donostia-san-sebastian": [43.3128, -1.9750],
-        "bilbao": [43.2630, -2.9350],
-        "vitoria-gasteiz": [42.8467, -2.6727],
-        "barakaldo": [43.2966, -2.9892],
-        "getxo": [43.3569, -3.0083],
-        "portugalete": [43.3196, -3.0208],
-        "irun": [43.3375, -1.7886],
-        "basauri": [43.2407, -2.8855],
-        "durango": [43.1708, -2.6316],
-        "eibar": [43.1840, -2.4717]
-      };
-
-      async function cargarTiempo(ciudad) {
-        try {
-          const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
-          const datos = await response.json();
-
-          descripcion.textContent = datos.estado ?? "N/A";
-          temperatura.textContent = datos.Temperatura ?? "...";
-          humedad.textContent = datos.Humedad ?? "...";
-          presion.textContent = datos.Presión ?? "...";
-          viento.textContent = datos.Viento ?? "...";
-          maxima.textContent = datos.Máxima ?? "...";
-          minima.textContent = datos.Mínima ?? "...";
-          salidaSol.textContent = datos["Salida del Sol"] ?? "...";
-          puestaSol.textContent = datos["Puesta del Sol"] ?? "...";
-
-          return datos;
-        } catch (error) {
-          console.error("Error al obtener el tiempo:", error);
-          descripcion.textContent = "Error al cargar datos";
-          return null;
-        }
-      }
-
+      // Simulación de datos semanales (puedes modificar o adaptar luego)
       function datosSemanalSimulados() {
         return [
           { dia: "Lun", min: 10, max: 15, estado: "🌤️ Soleado" },
@@ -171,6 +122,29 @@
           { dia: "Sáb", min: 9, max: 15, estado: "🌤️ Soleado" },
           { dia: "Dom", min: 10, max: 16, estado: "🌧️ Lluvias dispersas" }
         ];
+      }
+
+      async function cargarTiempo(ciudad) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
+          const datos = await response.json();
+
+          descripcion.textContent = datos.estado ?? "N/A";
+          temperatura.textContent = datos.temperatura ?? "...";
+          humedad.textContent = datos.humedad ?? "...";
+          presion.textContent = datos.presion ?? "...";
+          viento.textContent = datos.viento ?? "...";
+          maxima.textContent = datos.maxima ?? "...";
+          minima.textContent = datos.minima ?? "...";
+          salidaSol.textContent = datos.salidaSol ?? "...";
+          puestaSol.textContent = datos.puestaSol ?? "...";
+
+          return datos;  // devolver datos para usar en la previsión semanal
+        } catch (error) {
+          console.error("Error al obtener el tiempo:", error);
+          descripcion.textContent = "Error al cargar datos";
+          return null;
+        }
       }
 
       async function cargarPrevisionSemanal(ciudad) {
@@ -188,17 +162,14 @@
         contenedorPrevision.innerHTML = html;
       }
 
+      // Cuando cambia la ciudad, cargar datos y previsión semanal
       selector.addEventListener('change', async () => {
         const ciudad = selector.value;
         await cargarTiempo(ciudad);
         await cargarPrevisionSemanal(ciudad);
-
-        const coords = coordenadasPorCiudad[ciudad];
-        if (coords) {
-          fetchWeatherData(coords[0], coords[1]);
-        }
       });
 
+      // Al cargar la página, disparar el cambio para cargar datos
       selector.dispatchEvent(new Event("change"));
     });
   </script>

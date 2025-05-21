@@ -15,82 +15,96 @@ body {
   color: #333;
   padding: 0;
   text-align: center;
+  line-height: 1.6;
 }
 
 header {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
   color: white;
-  padding: 30px 0;
+  padding: 40px 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .header-content h1 {
-  font-size: 3em;
-  font-weight: 500;
-  margin-bottom: 10px;
+  font-size: 3rem;
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 
 .header-content span {
-  color: #00d1b2;
+  color: #00e1c0;
 }
 
 header p {
-  font-size: 1.2em;
+  font-size: 1.2rem;
   margin-top: 10px;
-  font-weight: 400;
 }
 
 #buscador {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
-#buscador select {
-  font-size: 1.2em;
+#buscador select,
+#buscador button {
+  font-size: 1.1rem;
   padding: 12px 20px;
-  border-radius: 6px;
+  margin: 0 10px;
+  border-radius: 8px;
   border: none;
-  background-color: #f1f1f1;
+  background-color: #f8f8f8;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-#buscador select:hover {
-  background-color: #e1e1e1;
+#buscador select:hover,
+#buscador button:hover {
+  background-color: #e3e3e3;
+  transform: scale(1.02);
 }
 
-/* Tiempo */
-#tiempo .weather-card {
-  background-color: white;
-  padding: 35px 50px;
-  border-radius: 32px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
-  display: block;
-  width: 98vw;
-  max-width: 1400px;
-  margin: 60px auto 40px auto;
-  text-align: left;
-  animation: fadeIn 1.5s ease-out;
-}
-
-.weather-card .estado {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.weather-card .estado .emoji {
-  font-size: 3em;
-  margin-right: 15px;
-}
-
-.weather-card .estado .descripcion {
-  font-size: 1.8em;
+#buscador button {
+  background-color: #00d1b2;
+  color: white;
   font-weight: 500;
 }
 
+#buscador button:hover {
+  background-color: #00b89c;
+}
+
+/* Tiempo */
+.weather-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 40px 50px;
+  border-radius: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  width: 95vw;
+  max-width: 1300px;
+  margin: 60px auto;
+  text-align: left;
+  animation: fadeIn 1.2s ease-out;
+}
+
+.estado {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.estado .emoji {
+  font-size: 3.2rem;
+  margin-right: 15px;
+}
+
+.estado .descripcion {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
 .weather-card .info p {
-  font-size: 1.2em;
-  margin-bottom: 15px;
-  color: #555;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #444;
 }
 
 .weather-card .info p strong {
@@ -99,10 +113,8 @@ header p {
 
 /* Gráfico */
 .grafico-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 40px 0;
+  margin: 40px 20px;
+  text-align: center;
 }
 
 .grafico-container h2 {
@@ -111,38 +123,138 @@ header p {
   margin-bottom: 20px;
 }
 
-#weatherChart {
-  display: block;
-  margin: 0 auto;
-  max-width: 700px;
+canvas {
   width: 100%;
   height: 350px;
-  min-width: 300px;
-  min-height: 200px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Cuadros de datos */
+.cuadros-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.cuadro-tiempo,
+.cuadro-sol {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 24px 30px;
+  color: #00363a;
+  text-align: center;
+  min-width: 220px;
+  max-width: 340px;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(0, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease;
+  flex: 1 1 220px;
+}
+
+.cuadro-tiempo:hover,
+.cuadro-sol:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.cuadro-izquierda,
+.cuadro-derecha {
+  text-align: left;
+}
+
+/* Responsive */
 @media (max-width: 800px) {
-  #weatherChart {
-    max-width: 98vw;
-    height: 250px;
+  .cuadros-container {
+    flex-direction: column;
+    align-items: center;
   }
+
+  .cuadro-tiempo, .cuadro-sol {
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+  }
+
+  header p {
+    font-size: 1rem;
+  }
+}
+
+/* Gráfico */
+.grafico-container {
+  margin: 60px auto 30px auto;
+  text-align: center;
+}
+
+.grafico-container h2 {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.grafico-temp-container {
+  background: rgba(20, 20, 30, 0.85);
+  border-radius: 28px;
+  border: 2px solid rgba(0, 255, 255, 0.25);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  padding: 24px 16px;
+  margin: 0 auto 32px auto;
+  max-width: 900px;
+}
+
+.grafico-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.grafico-scroll-x canvas {
+  min-width: 2200px;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Previsión Semanal */
+.semana-grid {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.dia {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 18px;
+  margin: 8px;
+  min-width: 120px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #00363a;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.dia:hover {
+  transform: scale(1.05);
 }
 
 /* Footer */
 footer {
-  background-color: #1f1f1f;
+  background-color: #1c1c1c;
   padding: 20px;
-  font-size: 0.9em;
-  color: #bbb;
+  font-size: 0.9rem;
+  color: #aaa;
   text-align: center;
-}
-
-footer p {
-  margin: 5px;
 }
 
 footer a {
@@ -156,110 +268,6 @@ footer a:hover {
 
 /* Animaciones */
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Cuadros para los datos */
-.cuadros-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 32px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-.cuadro-tiempo,
-.cuadro-sol {
-  background: rgba(255, 255, 255, 0.22); /* blanco translúcido */
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-  padding: 28px 32px;
-  min-width: 220px;
-  max-width: 340px;
-  color: #00363a;
-  font-size: 1.15em;
-  text-align: center;
-  backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(0, 255, 255, 0.18);
-  margin-bottom: 24px;
-  flex: 1 1 220px;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-.cuadro-tiempo:hover,
-.cuadro-sol:hover {
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.22);
-  transform: translateY(-4px) scale(1.03);
-}
-
-/* Opcional: alineación a la izquierda y derecha en desktop */
-.cuadro-izquierda {
-  text-align: left;
-}
-.cuadro-derecha {
-  text-align: left;
-}
-
-/* Responsive para móviles */
-@media (max-width: 800px) {
-  .cuadros-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .cuadro-tiempo, .cuadro-sol {
-    max-width: 95vw;
-    text-align: center;
-    gap: 16px;
-  }
-}
-
-/* Gráfico con scroll horizontal para todas las horas */
-.grafico-temp-container {
-  background: rgba(20, 20, 30, 0.75);
-  border-radius: 32px;
-  border: 2.5px solid rgba(0,255,255,0.25);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-  padding: 32px 16px;
-  margin: 0 auto 32px auto;
-  max-width: 900px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.grafico-scroll-x {
-  overflow-x: auto;
-  overflow-y: hidden;
-  width: 100%;
-  max-width: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-
-.grafico-scroll-x canvas {
-  min-width: 2200px; /* Suficiente para mostrar 24 horas claramente */
-  display: block;
-}
-
-.semana-grid {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-.dia {
-  min-width: 100px;
-  margin: 8px;
-  padding: 10px 0;
-  /* El resto de estilos los hereda de .cuadro-tiempo */
-}
-.semana-grid .dia {
-  background: rgba(255, 255, 255, 0.97); /* aún menos translúcido */
-  /* El resto de estilos los hereda de .cuadro-tiempo */
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
