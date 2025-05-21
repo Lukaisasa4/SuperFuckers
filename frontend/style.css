@@ -238,10 +238,12 @@ footer a:hover {
   margin-top: 1rem;
 }
 .dia {
-  background: #f1f1f1;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  width: 100px;
-  margin: 5px;
+  min-width: 100px;
+  margin: 8px;
+  padding: 10px 0;
+  /* El resto de estilos los hereda de .cuadro-tiempo */
+}
+.semana-grid .dia {
+  background: rgba(255, 255, 255, 0.97); /* aún menos translúcido */
+  /* El resto de estilos los hereda de .cuadro-tiempo */
 }
