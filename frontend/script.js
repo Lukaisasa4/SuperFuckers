@@ -1,55 +1,146 @@
-fetch('http://localhost:3000/api/tiempo-donosti')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('tiempo').innerHTML = `
-      <div class="cuadros-container">
-        <div class="cuadro-tiempo cuadro-izquierda">
-          <p><strong>Temperatura:</strong> ${data.temperatura} °C</p>
-          <p><strong>Máxima:</strong> ${data.temp_max || '-'} °C</p>
-          <p><strong>Mínima:</strong> ${data.temp_min || '-'} °C</p>
-        </div>
-        <div class="cuadro-tiempo cuadro-derecha">
-          <p><strong>Humedad:</strong> ${data.humedad} %</p>
-          <p><strong>Presión:</strong> ${data.presion} hPa</p>
-          <p><strong>Viento:</strong> ${data.viento || '-'} km/h</p>
-        </div>
-      </div>
-    `;
-  })
-  .catch(error => {
-    document.getElementById('tiempo').innerHTML = `
-      <div class="cuadro-tiempo">
-        Error al cargar los datos: ${error}
-      </div>
-    `;
-  });
-// Función para obtener el índice de la hora más cercana
+const chartCanvas = document.getElementById('weatherChart');
+const locationSelect = document.getElementById('locationSelect');
+let weatherChart = null;
 
-// Ejemplo de datos
-const horas = Array.from({length: 24}, (_, i) => `${i}:00`);
-const datos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-const ctx = document.getElementById('graficoTemp').getContext('2d');
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: horas,
-    datasets: [{
-      label: 'Temperatura',
-      data: datos,
-      borderColor: 'rgba(0,180,255,1)',
-      backgroundColor: 'rgba(0,180,255,0.2)',
-      fill: true,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: false, // Importante para scroll
-    plugins: {
-      legend: { display: false }
-    },
-    scales: {
-      x: { ticks: { color: '#fff' } },
-      y: { ticks: { color: '#fff' } }
-    }
-  }
+// Escuchar cambios de ubicación
+locationSelect.addEventListener('change', () => {
+    const [lat, lon] = locationSelect.value.split(',');
+    fetchWeatherData(parseFloat(lat), parseFloat(lon));
 });
+
+// Función para obtener icono según el código del tiempo
+function getWeatherIcon(code) {
+    const iconMap = {
+        0: "☀️",   // Soleado
+        1: "🌤️",  // Parcialmente despejado
+        2: "⛅",
+        3: "☁️",
+        45: "🌫️",
+        48: "🌫️",
+        51: "🌦️",
+        53: "🌦️",
+        55: "🌧️",
+        61: "🌧️",
+        63: "🌧️",
+        65: "🌧️",
+        66: "🌨️",
+        67: "🌨️",
+        71: "🌨️",
+        73: "🌨️",
+        75: "❄️",
+        77: "❄️",
+        80: "🌧️",
+        81: "🌧️",
+        82: "🌧️",
+        95: "⛈️",
+        96: "⛈️",
+        99: "⛈️"
+    };
+    return iconMap[code] || "❓";
+}
+
+// Función para obtener y mostrar datos del clima
+async function fetchWeatherData(latitude, longitude) {
+    try {
+        const response = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode&timezone=auto`
+        );
+        const data = await response.json();
+        const hours = data.hourly.time;
+        const temperatures = data.hourly.temperature_2m;
+        const weatherCodes = data.hourly.weathercode;
+
+        const today = new Date().toISOString().split('T')[0];
+        const todayHours = [];
+        const todayTemps = [];
+        const todayWeatherCodes = [];
+
+        for (let i = 0; i < hours.length; i++) {
+            if (hours[i].startsWith(today)) {
+                const hour = new Date(hours[i]).getHours();
+                todayHours.push(`${hour}:00`);
+                todayTemps.push(temperatures[i]);
+                todayWeatherCodes.push(weatherCodes[i]);
+            }
+        }
+
+        renderChart(todayHours, todayTemps, todayWeatherCodes);
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+    }
+}
+
+// Función para renderizar la gráfica con iconos
+function renderChart(labels, temperatures, weatherCodes) {
+    if (weatherChart) {
+        weatherChart.destroy();
+    }
+
+    const weatherIcons = weatherCodes.map(code => getWeatherIcon(code));
+
+    weatherChart = new Chart(chartCanvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Temperatura (°C)',
+                data: temperatures,
+                backgroundColor: 'rgba(99, 132, 255, 0.2)',
+                borderColor: 'rgba(99, 132, 255, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(99,132,255,1)'
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const temp = context.formattedValue;
+                            const icon = weatherIcons[context.dataIndex];
+                            return `${icon} ${temp} °C`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        font: { size: 10 }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 10 }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'weatherIconPlugin',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const dataset = chart.getDatasetMeta(0);
+                dataset.data.forEach((point, index) => {
+                    ctx.save();
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(weatherIcons[index], point.x, point.y - 15);
+                    ctx.restore();
+                });
+            }
+        }]
+    });
+}
+
+// Carga inicial (Bilbao por defecto)
+const [defaultLat, defaultLon] = locationSelect.value.split(',');
+fetchWeatherData(parseFloat(defaultLat), parseFloat(defaultLon));

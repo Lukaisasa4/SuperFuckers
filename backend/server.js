@@ -11,8 +11,8 @@ app.use(cors());
 // Configuración de base de datos
 const dbConfig = {
   host: 'localhost',
-  user: 'TU_USUARIO',
-  password: 'TU_CONTRASEÑA',
+  user: 'root',
+  password: 'sqlo12345',
   database: 'reto99'
 };
 
@@ -255,6 +255,6 @@ app.get('/', (req, res) => {
 });
 
 // Iniciar servidor (SOLO UNA VEZ, al final de todo)
-app.listen(3002, () => {
-  console.log('Servidor backend corriendo en http://localhost:3002');
+app.listen(3001, () => {
+  console.log('Servidor backend corriendo en http://localhost:3001');
 });
