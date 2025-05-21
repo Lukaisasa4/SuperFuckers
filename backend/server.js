@@ -227,7 +227,32 @@ cron.schedule('5 0 * * *', async () => {
   }
 });
 
+// ... (todo tu código anterior se mantiene igual hasta)
 
+app.get("/api/test-resumen", async (req, res) => {
+  try {
+    await guardarResumenDiario();
+    res.json({ status: "Resumen diario guardado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//prueba de conexion
+app.get('/ping', (req, res) => res.send('pong'));
+
+// Ruta principal
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Servidor de Clima del País Vasco</h1>
+    <p>Endpoints disponibles:</p>
+    <ul>
+      <li><a href="/api/tiempo-bilbao">/api/tiempo-:ciudad</a> (ej: bilbao, vitoria-gasteiz)</li>
+      <li><a href="/api/guardar-tiempo">/api/guardar-tiempo</a> (guarda datos en DB)</li>
+      <li><a href="/ping">/ping</a> (prueba de conexión)</li>
+    </ul>
+  `);
+});
 
 // Iniciar servidor (SOLO UNA VEZ, al final de todo)
 app.listen(3002, () => {
