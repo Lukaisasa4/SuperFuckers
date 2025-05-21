@@ -7,11 +7,11 @@ const cron = require('node-cron');
 
 const app = express();
 app.use(cors());
-
+ 
 // Configuración de base de datos
 const dbConfig = {
   host: 'localhost',
-  user: 'TU_USUARIO',
+  user: 'root',
   password: 'TU_CONTRASEÑA',
   database: 'reto99'
 };
