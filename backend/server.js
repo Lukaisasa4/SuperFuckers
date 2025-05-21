@@ -1,46 +1,36 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const mysql = require('mysql2/promise');
+const cron = require('node-cron');
+
 
 const app = express();
 app.use(cors());
 
+// Configuración de base de datos
+const dbConfig = {
+  host: 'localhost',
+  user: 'TU_USUARIO',
+  password: 'TU_CONTRASEÑA',
+  database: 'reto99'
+};
+
+// Datos de ciudades
 const cities = {
-  bilbao: { name: "Bilbao", latitude: 43.2630, longitude: -2.9350, altitude: 19 },
-  "vitoria-gasteiz": { name: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6716, altitude: 525 },
-  "donostia-san-sebastian": { name: "Donostia / San Sebastián", latitude: 43.3128, longitude: -1.9748, altitude: 6 },
-  barakaldo: { name: "Barakaldo", latitude: 43.2956, longitude: -2.9972, altitude: 39 },
-  getxo: { name: "Getxo", latitude: 43.3569, longitude: -3.0116, altitude: 50 },
-  portugalete: { name: "Portugalete", latitude: 43.3204, longitude: -3.0197, altitude: 20 },
-  irun: { name: "Irun", latitude: 43.3381, longitude: -1.7890, altitude: 10 },
-  basauri: { name: "Basauri", latitude: 43.2386, longitude: -2.8852, altitude: 70 },
-  durango: { name: "Durango", latitude: 43.1704, longitude: -2.6336, altitude: 121 },
-  eibar: { name: "Eibar", latitude: 43.1849, longitude: -2.4713, altitude: 121 }
+  bilbao: { nombre: "Bilbao", latitude: 43.2630, longitude: -2.9350, altitude: 19 },
+  "vitoria-gasteiz": { nombre: "Vitoria-Gasteiz", latitude: 42.8467, longitude: -2.6716, altitude: 525 },
+  "donostia-san-sebastian": { nombre: "Donostia / San Sebastián", latitude: 43.3128, longitude: -1.9748, altitude: 6 },
+  barakaldo: { nombre: "Barakaldo", latitude: 43.2956, longitude: -2.9972, altitude: 39 },
+  getxo: { nombre: "Getxo", latitude: 43.3569, longitude: -3.0116, altitude: 50 },
+  portugalete: { nombre: "Portugalete", latitude: 43.3204, longitude: -3.0197, altitude: 20 },
+  irun: { nombre: "Irun", latitude: 43.3381, longitude: -1.7890, altitude: 10 },
+  basauri: { nombre: "Basauri", latitude: 43.2386, longitude: -2.8852, altitude: 70 },
+  durango: { nombre: "Durango", latitude: 43.1704, longitude: -2.6336, altitude: 121 },
+  eibar: { nombre: "Eibar", latitude: 43.1849, longitude: -2.4713, altitude: 121 }
 };
 
-
-const weatherMap = {
-  0: { desc: "Despejado", emoji: "☀️" },
-  1: { desc: "Principalmente despejado", emoji: "🌤️" },
-  2: { desc: "Parcialmente nublado", emoji: "⛅" },
-  3: { desc: "Nublado", emoji: "☁️" },
-  45: { desc: "Niebla", emoji: "🌫️" },
-  48: { desc: "Niebla con escarcha", emoji: "🌫️❄️" },
-  51: { desc: "Llovizna ligera", emoji: "🌦️" },
-  53: { desc: "Llovizna moderada", emoji: "🌦️" },
-  55: { desc: "Llovizna densa", emoji: "🌧️" },
-  61: { desc: "Lluvia ligera", emoji: "🌦️" },
-  63: { desc: "Lluvia moderada", emoji: "🌧️" },
-  65: { desc: "Lluvia intensa", emoji: "🌧️" },
-  80: { desc: "Chubascos ligeros", emoji: "🌦️" },
-  81: { desc: "Chubascos moderados", emoji: "🌧️" },
-  82: { desc: "Chubascos violentos", emoji: "⛈️" }
-};
-
-function getWeatherDescription(code) {
-  return weatherMap[code] || { desc: "Desconocido", emoji: "❓" };
-}
-
+// Obtener índice de la hora más cercana
 function getClosestHourIndex(times) {
   const now = new Date();
   const nowHour = now.toISOString().slice(0, 13) + ":00";
@@ -59,7 +49,7 @@ function getClosestHourIndex(times) {
   return idx;
 }
 
-// Express route to get weather info for a city
+// Ruta para consultar tiempo actual
 app.get("/api/tiempo-:ciudad", async (req, res) => {
   const ciudad = req.params.ciudad.toLowerCase();
   const coords = cities[ciudad];
@@ -77,7 +67,6 @@ app.get("/api/tiempo-:ciudad", async (req, res) => {
     const daily = datos.daily || {};
     const hourly = datos.hourly || {};
 
-    // Find the closest hour index for humidity and pressure
     let humedad = null;
     let presion = null;
     if (hourly.time && hourly.relative_humidity_2m && hourly.pressure_msl) {
@@ -102,7 +91,145 @@ app.get("/api/tiempo-:ciudad", async (req, res) => {
   }
 });
 
+// Ruta para guardar datos actuales e históricos en la base de datos
+app.get("/api/guardar-tiempo", async (req, res) => {
+  const conn = await mysql.createConnection(dbConfig);
+  const resultados = [];
 
-app.listen(3001, () => {
-  console.log('Servidor backend corriendo en http://localhost:3001');
+  for (const key in cities) {
+    const { nombre, latitude, longitude } = cities[key];
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,winddirection_10m&timezone=Europe%2FMadrid`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      const clima = data.current_weather;
+      const idx = getClosestHourIndex(data.hourly.time);
+
+      const humedad = data.hourly.relative_humidity_2m?.[idx] || null;
+      const precipitacion = data.hourly.precipitation?.[idx] || null;
+      const viento_direccion = clima.winddirection?.toString() || null;
+      const fechaHora = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      const [rows] = await conn.execute('SELECT id FROM ubicaciones WHERE nombre = ?', [nombre]);
+      if (rows.length === 0) {
+        resultados.push({ ciudad: nombre, estado: "NO ENCONTRADA EN DB" });
+        continue;
+      }
+
+      const id_ubicacion = rows[0].id;
+
+      // Insertar en tiempo_actual
+      await conn.execute(`
+        INSERT INTO tiempo_actual (id_ubicacion, fecha_hora, temperatura, humedad, viento_velocidad, viento_direccion, precipitacion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `, [id_ubicacion, fechaHora, clima.temperature, humedad, clima.windspeed, viento_direccion, precipitacion]);
+
+      // Insertar en historico
+      await conn.execute(`
+        INSERT INTO historico (id_ubicacion, fecha_hora, temperatura, humedad, viento_velocidad, viento_direccion, precipitacion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `, [id_ubicacion, fechaHora, clima.temperature, humedad, clima.windspeed, viento_direccion, precipitacion]);
+
+      resultados.push({ ciudad: nombre, estado: "GUARDADO" });
+    } catch (err) {
+      resultados.push({ ciudad: nombre, estado: "ERROR", mensaje: err.message });
+    }
+  }
+
+  await conn.end();
+  res.json(resultados);
+});
+async function guardarResumenDiario() {
+  const conn = await mysql.createConnection(dbConfig);
+  // Fecha de ayer en formato YYYY-MM-DD
+  const fechaAyer = new Date();
+  fechaAyer.setDate(fechaAyer.getDate() - 1);
+  const fecha = fechaAyer.toISOString().split('T')[0];
+
+  console.log(`📊 Guardando resumen diario para fecha: ${fecha}`);
+
+  for (const key in cities) {
+    const nombre = cities[key].nombre;
+
+    // Obtener id_ubicacion
+    const [rowsUbicacion] = await conn.execute('SELECT id FROM ubicaciones WHERE nombre = ?', [nombre]);
+    if (rowsUbicacion.length === 0) {
+      console.log(`❌ Ubicación no encontrada en DB: ${nombre}`);
+      continue;
+    }
+    const id_ubicacion = rowsUbicacion[0].id;
+
+    // Consultar datos históricos del día anterior
+    const [rows] = await conn.execute(`
+      SELECT
+        AVG(temperatura) AS temperatura_media,
+        AVG(humedad) AS humedad_media,
+        AVG(viento_velocidad) AS viento_velocidad_media,
+        SUM(precipitacion) AS precipitacion_total
+      FROM historico
+      WHERE id_ubicacion = ? AND DATE(fecha_hora) = ?
+    `, [id_ubicacion, fecha]);
+
+    const resumen = rows[0];
+    if (!resumen || resumen.temperatura_media === null) {
+      console.log(`⚠️ Sin datos para resumen en ${nombre} para fecha ${fecha}`);
+      continue;
+    }
+
+    // Insertar o actualizar resumen diario
+    await conn.execute(`
+      INSERT INTO resumen_diario (id_ubicacion, fecha, temperatura_media, humedad_media, viento_velocidad_media, precipitacion_total)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        temperatura_media = VALUES(temperatura_media),
+        humedad_media = VALUES(humedad_media),
+        viento_velocidad_media = VALUES(viento_velocidad_media),
+        precipitacion_total = VALUES(precipitacion_total)
+    `, [
+      id_ubicacion,
+      fecha,
+      resumen.temperatura_media,
+      resumen.humedad_media,
+      resumen.viento_velocidad_media,
+      resumen.precipitacion_total
+    ]);
+
+    console.log(`✅ Resumen diario guardado para ${nombre} (${fecha})`);
+  }
+
+  await conn.end();
+}
+
+
+// Ejecutar automáticamente cada día a las 00:00 para guardar datos actuales e históricos
+cron.schedule('0 0 * * *', async () => {
+  console.log("⏰ Ejecutando tarea programada para guardar el clima...");
+
+  try {
+    const res = await fetch('http://localhost:3002/api/guardar-tiempo');
+    const data = await res.json();
+    console.log("✅ Datos guardados automáticamente:", data);
+  } catch (error) {
+    console.error("❌ Error al ejecutar la tarea programada:", error.message);
+  }
+});
+
+// Ejecutar automáticamente cada día a las 00:05 para guardar resumen diario (5 minutos después de guardar datos)
+cron.schedule('5 0 * * *', async () => {
+  console.log("⏰ Ejecutando tarea programada para guardar resumen diario...");
+
+  try {
+    await guardarResumenDiario();
+    console.log("✅ Resumen diario guardado correctamente");
+  } catch (error) {
+    console.error("❌ Error guardando resumen diario:", error.message);
+  }
+});
+
+
+
+// Iniciar servidor (SOLO UNA VEZ, al final de todo)
+app.listen(3002, () => {
+  console.log('Servidor backend corriendo en http://localhost:3002');
 });

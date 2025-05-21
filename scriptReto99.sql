@@ -65,3 +65,15 @@ select * from ubicaciones;
 select * from tiempo_actual;
 select * from historico;
 select * from prediccion;
+
+
+CREATE TABLE resumen_diario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_ubicacion INT NOT NULL,
+    fecha DATE NOT NULL,
+    temperatura_media DECIMAL(5,2),
+    humedad_media DECIMAL(5,2),
+    viento_velocidad_media DECIMAL(5,2),
+    precipitacion_total DECIMAL(5,2),
+    FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones(id)
+);
