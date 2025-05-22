@@ -125,7 +125,6 @@
     <p>Datos proporcionados por <a href="https://opendata.euskalmet.eus" target="_blank">Euskalmet</a>.</p>
   </footer>
 
-  <script src="script.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const descripcion = document.querySelector('.descripcion');
@@ -181,7 +180,7 @@
         try {
           const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
           const datos = await response.json();
-          descripcion.textContent = datos.estado ?? "N/A";
+          descripcion.textContent = datos.estadoCodigo ?? "N/A";
           temperatura.textContent = datos.temperatura ?? "...";
           humedad.textContent = datos.humedad ?? "...";
           presion.textContent = datos.presion ?? "...";
@@ -328,6 +327,7 @@
       }
 
       async function cargarTodo(ciudad) {
+        console.log("Cargando datos para:", ciudad);
         await cargarTiempo(ciudad);
         await cargarPrevisionSemanal(ciudad);
         const coords = coordenadasCiudades[ciudad];
