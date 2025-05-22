@@ -77,7 +77,7 @@ def obtener_tiempo_ciudades():
             descripcion, emoji = obtener_descripcion_weathercode(cod_clima)
 
             resultados[ciudad] = {
-                "🌦️ Estado": f"{emoji} {descripcion}",
+                "🌦️ Estado": f"{emoji} {"descripcion"}",
                 "Temperatura": f"{clima_actual.get('temperature', 'N/A')} °C",
                 "Humedad": f"{datos['hourly']['relative_humidity_2m'][indice_actual]} %",
                 "Presión": f"{datos['hourly']['pressure_msl'][indice_actual]} hPa",

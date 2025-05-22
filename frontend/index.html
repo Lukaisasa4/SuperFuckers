@@ -73,7 +73,7 @@
   <section id="tiempo">
     <div class="weather-card">
       <div class="estado">
-        <span class="emoji">🌦️</span>
+        <span class="emoji">⛅ Parcialmente nublado</span>
         <div class="descripcion">Cargando...</div>
       </div>
       <div class="info">
@@ -181,7 +181,7 @@
         try {
           const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
           const datos = await response.json();
-          descripcion.textContent = datos.estado ?? "N/A";
+          descripcion.textContent = datos.estado ?? "     ";
           temperatura.textContent = datos.temperatura ?? "...";
           humedad.textContent = datos.humedad ?? "...";
           presion.textContent = datos.presion ?? "...";
@@ -214,7 +214,7 @@
           { dia: "Lun", min: 10, max: 15, estado: "🌤️ Soleado" },
           { dia: "Mar", min: 9, max: 14, estado: "⛅ Parcialmente nublado" },
           { dia: "Mié", min: 8, max: 13, estado: "🌧️ Lluvias" },
-          { dia: "Jue", min: 7, max: 12, estado: "🌦️ Chubascos" },
+          { dia: "Hoy", min: 15, max: 18, estado: "⛅ Parcialmente nublado" },
           { dia: "Vie", min: 8, max: 14, estado: "☀️ Soleado" },
           { dia: "Sáb", min: 9, max: 15, estado: "🌤️ Soleado" },
           { dia: "Dom", min: 10, max: 16, estado: "🌧️ Lluvias dispersas" }
