@@ -66,14 +66,15 @@ def obtener_tiempo_ciudades():
             f"&current_weather=true"
             f"&hourly=relative_humidity_2m,pressure_msl,windspeed_10m"
             f"&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset"
-            f"&timezone=Europe%2FMadrid"
+            f"&timezone=auto"
         )
 
         try:
             response = requests.get(url)
+            
             response.raise_for_status()
             datos = response.json()
-
+            print(datos)
             clima_actual = datos.get("current_weather", {})
             time_list = datos["hourly"]["time"]
             ahora = datetime.now().strftime("%Y-%m-%dT%H:00")
