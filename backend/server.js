@@ -11,8 +11,8 @@ app.use(cors());
 // Configuración de base de datos
 const dbConfig = {
   host: 'localhost',
-  user: 'TU_USUARIO',
-  password: 'TU_CONTRASEÑA',
+  user: 'root',
+  password: 'sanlapo4',
   database: 'reto99'
 };
 
@@ -27,8 +27,14 @@ const cities = {
   irun: { nombre: "Irun", latitude: 43.3381, longitude: -1.7890, altitude: 10 },
   basauri: { nombre: "Basauri", latitude: 43.2386, longitude: -2.8852, altitude: 70 },
   durango: { nombre: "Durango", latitude: 43.1704, longitude: -2.6336, altitude: 121 },
-  eibar: { nombre: "Eibar", latitude: 43.1849, longitude: -2.4713, altitude: 121 }
+  eibar: { nombre: "Eibar", latitude: 43.1849, longitude: -2.4713, altitude: 121 },
+  sestao: { nombre: "Sestao", latitude: 43.3094, longitude: -3.0075, altitude: 26 },
+  santurtzi: { nombre: "Santurtzi", latitude: 43.3283, longitude: -3.0323, altitude: 23 },
+  lezama: { nombre: "Lezama", latitude: 43.2739, longitude: -2.8434, altitude: 65 },
+  tolosa: { nombre: "Tolosa", latitude: 43.1345, longitude: -2.0705, altitude: 75 },
+  zarautz: { nombre: "Zarautz", latitude: 43.2843, longitude: -2.1696, altitude: 5 }
 };
+
 
 // Obtener índice de la hora más cercana
 function getClosestHourIndex(times) {

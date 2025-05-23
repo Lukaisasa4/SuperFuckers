@@ -15,8 +15,14 @@ CIUDADES = {
     "irun": {"lat": 43.3381, "lon": -1.7890, "alt": 10},
     "basauri": {"lat": 43.2386, "lon": -2.8852, "alt": 70},
     "durango": {"lat": 43.1704, "lon": -2.6336, "alt": 121},
-    "eibar": {"lat": 43.1849, "lon": -2.4713, "alt": 121}
+    "eibar": {"lat": 43.1849, "lon": -2.4713, "alt": 121},
+    "sestao": {"lat": 43.3094, "lon": -3.0075, "alt": 26},
+    "santurtzi": {"lat": 43.3283, "lon": -3.0323, "alt": 23},
+    "lezama": {"lat": 43.2739, "lon": -2.8434, "alt": 65},
+    "tolosa": {"lat": 43.1345, "lon": -2.0705, "alt": 75},
+    "zarautz": {"lat": 43.2843, "lon": -2.1696, "alt": 5}
 }
+
 
 WEATHER_CODES = {
     0: ("Despejado", "☀️"),
@@ -77,7 +83,7 @@ def obtener_tiempo_ciudades():
             descripcion, emoji = obtener_descripcion_weathercode(cod_clima)
 
             resultados[ciudad] = {
-                "🌦️ Estado": f"{emoji} {"descripcion"}",
+                "🌦️ Estado": f"{emoji} {descripcion}",
                 "Temperatura": f"{clima_actual.get('temperature', 'N/A')} °C",
                 "Humedad": f"{datos['hourly']['relative_humidity_2m'][indice_actual]} %",
                 "Presión": f"{datos['hourly']['pressure_msl'][indice_actual]} hPa",
@@ -91,6 +97,7 @@ def obtener_tiempo_ciudades():
             resultados[ciudad] = {"error": str(e)}
 
     return resultados
+
 
 @app.get("/api/semana-{ciudad}")
 def obtener_semana(ciudad: str):
