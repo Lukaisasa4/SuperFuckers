@@ -166,7 +166,7 @@
         try {
           const response = await fetch(`http://localhost:3001/api/tiempo-${ciudad}`);
           const datos = await response.json();
-          descripcion.textContent = datos.estado ?? "N/A";
+          descripcion.textContent = datos.estado ?? "";
           temperatura.textContent = datos.temperatura ?? "...";
           humedad.textContent = datos.humedad ?? "...";
           presion.textContent = datos.presion ?? "...";
