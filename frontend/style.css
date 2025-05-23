@@ -271,3 +271,35 @@ footer a:hover {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+    .grafico-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 40px 0;
+    }
+    #weatherChart {
+      display: block;
+      margin: 0 auto;
+      max-width: 700px;
+      width: 100%;
+      height: 350px;
+      min-width: 300px;
+      min-height: 200px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      padding: 16px;
+    }
+    @media (max-width: 800px) {
+      #weatherChart {
+        max-width: 98vw;
+        height: 250px;
+      }
+    }
+    #mapa {
+      height: 350px;
+      margin: 40px auto;
+      max-width: 800px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }

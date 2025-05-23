@@ -9,40 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    .grafico-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 40px 0;
-    }
-    #weatherChart {
-      display: block;
-      margin: 0 auto;
-      max-width: 700px;
-      width: 100%;
-      height: 350px;
-      min-width: 300px;
-      min-height: 200px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-      padding: 16px;
-    }
-    @media (max-width: 800px) {
-      #weatherChart {
-        max-width: 98vw;
-        height: 250px;
-      }
-    }
-    #mapa {
-      height: 350px;
-      margin: 40px auto;
-      max-width: 800px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-  </style>
+ 
 </head>
 
 <body>
@@ -63,7 +30,13 @@
           <option value="basauri">Basauri</option>
           <option value="durango">Durango</option>
           <option value="eibar">Eibar</option>
+          <option value="sestao">Sestao</option>
+          <option value="santurtzi">Santurtzi</option>
+          <option value="lezama">Lezama</option>
+          <option value="tolosa">Tolosa</option>
+          <option value="zarautz">Zarautz</option>
         </select>
+
         <button id="usar-ubicacion">📍 Usar mi ubicación</button>
       </div>
     </div>
@@ -114,6 +87,13 @@
     </div>
   </section>
 
+  <section id="historico">
+  <h2>Semana pasada</h2>
+  <div class="semana-container" id="historico-semanal">
+    <p>Cargando histórico...</p>
+  </div>
+</section>
+
   <!-- Mapa -->
   <section id="seccion-mapa">
     <h2 style="text-align: center;">📍 Ubicación en el mapa</h2>
@@ -143,17 +123,23 @@
       const contenedorPrevision = document.getElementById("prevision-semanal");
 
       const coordenadasCiudades = {
-        "donostia-san-sebastian": [43.3213, -1.9856],
-        "bilbao": [43.2630, -2.9350],
-        "vitoria-gasteiz": [42.8469, -2.6727],
-        "barakaldo": [43.2965, -2.9895],
-        "getxo": [43.3569, -3.0112],
-        "portugalete": [43.3208, -3.0196],
-        "irun": [43.3381, -1.7899],
-        "basauri": [43.2426, -2.8857],
-        "durango": [43.1707, -2.6337],
-        "eibar": [43.1843, -2.4711]
-      };
+  "donostia-san-sebastian": [43.3213, -1.9856],
+  "bilbao": [43.2630, -2.9350],
+  "vitoria-gasteiz": [42.8469, -2.6727],
+  "barakaldo": [43.2965, -2.9895],
+  "getxo": [43.3569, -3.0112],
+  "portugalete": [43.3208, -3.0196],
+  "irun": [43.3381, -1.7899],
+  "basauri": [43.2426, -2.8857],
+  "durango": [43.1707, -2.6337],
+  "eibar": [43.1843, -2.4711],
+  "sestao": [43.3094, -3.0075],
+  "santurtzi": [43.3283, -3.0323],
+  "lezama": [43.2739, -2.8434],
+  "tolosa": [43.1345, -2.0705],
+  "zarautz": [43.2843, -2.1696]
+};
+
 
       // Mapa
       const mapa = L.map('mapa').setView([43.2630, -2.9350], 10);
@@ -161,7 +147,7 @@
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(mapa);
       let marcador = L.marker([43.2630, -2.9350]).addTo(mapa)
-        .bindPopup("⛅ Cargando tiempo...");
+        .bindPopup(" ⛅");
 
       function actualizarMapa(ciudad) {
         const coords = coordenadasCiudades[ciudad];
@@ -210,17 +196,18 @@
 
       function datosSemanalSimulados() {
         return [
+        { dia: "Hoy", min: 15, max: 18, estado: "⛅ Parcialmente nublado" },
+          { dia: "Vie", min: 8, max: 14, estado: "☀️ Soleado" },
+          { dia: "Sáb", min: 9, max: 15, estado: "🌤️ Soleado" },
+          { dia: "Dom", min: 10, max: 16, estado: "🌧️ Lluvias dispersas" },
           { dia: "Lun", min: 10, max: 15, estado: "🌤️ Soleado" },
           { dia: "Mar", min: 9, max: 14, estado: "⛅ Parcialmente nublado" },
           { dia: "Mié", min: 8, max: 13, estado: "🌧️ Lluvias" },
-          { dia: "Hoy", min: 15, max: 18, estado: "⛅ Parcialmente nublado" },
-          { dia: "Vie", min: 8, max: 14, estado: "☀️ Soleado" },
-          { dia: "Sáb", min: 9, max: 15, estado: "🌤️ Soleado" },
-          { dia: "Dom", min: 10, max: 16, estado: "🌧️ Lluvias dispersas" }
+          
         ];
       }
 
-      async function cargarPrevisionSemanal(ciudad) {
+         async function cargarPrevisionSemanal(ciudad) {
         const dias = datosSemanalSimulados();
         let html = `<div class="semana-grid" style="display:flex; justify-content: space-around; max-width: 600px; margin: auto;">`;
         dias.forEach(dia => {
@@ -234,6 +221,35 @@
         html += `</div>`;
         contenedorPrevision.innerHTML = html;
       }
+
+       function datosSemanaPasada() {
+        return [
+          { dia: "Vie", min: 8, max: 13, estado: "🌧️ Lluvias" },
+          { dia: "Sáb", min: 9, max: 14, estado: "⛅ Parcialmente nublado" },
+          { dia: "Dom", min: 10, max: 15, estado: "🌤️ Soleado" },
+          { dia: "Lun", min: 10, max: 15, estado: "🌤️ Soleado" },
+          { dia: "Mar", min: 9, max: 14, estado: "⛅ Parcialmente nublado" },
+          { dia: "Mié", min: 8, max: 13, estado: "🌧️ Lluvias" },
+          { dia: "Jueves", min: 15, max: 18, estado: "⛅ Parcialmente nublado" },
+          
+        ];
+      }
+
+   
+async function cargarHistoricoSemanaPasada(ciudad) {
+  const dias = datosSemanaPasada();
+  let html = `<div class="semana-grid" style="display:flex; justify-content: space-around; max-width: 600px; margin: auto;">`;
+  dias.forEach(dia => {
+    html += `
+      <div class="cuadro-tiempo dia">
+        <p><strong>${dia.dia}</strong></p>
+        <p>${dia.estado}</p>
+        <p>${dia.min}° / ${dia.max}°</p>
+      </div>`;
+  });
+  html += `</div>`;
+  document.getElementById("historico-semanal").innerHTML = html;
+}
 
       // --- GRÁFICO HORARIO ---
       let weatherChart = null;
@@ -330,13 +346,14 @@
         console.log("Cargando datos para:", ciudad);
         await cargarTiempo(ciudad);
         await cargarPrevisionSemanal(ciudad);
+        await cargarHistoricoSemanaPasada(ciudad);
         const coords = coordenadasCiudades[ciudad];
         if (coords) {
           await fetchWeatherData(coords[0], coords[1]);
           actualizarMapa(ciudad);
         }
       }
-
+      
       selector.addEventListener('change', async () => {
         await cargarTodo(selector.value);
       });
