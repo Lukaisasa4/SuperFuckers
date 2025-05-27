@@ -169,7 +169,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(120deg, #ffffff 0%, #59acec 100%);
+  background: linear-gradient(120deg, #ffffff 0%, #008efb 100%);
   border-radius: 36px;
   box-shadow: 0 8px 32px 0 rgba(31,38,135,0.13);
   animation: fadeIn 0.7s;
