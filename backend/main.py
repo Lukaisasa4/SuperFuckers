@@ -59,7 +59,7 @@ def get_weather(
     data = requests.get(url).json()
 
     # Guardar en la base de datos los datos históricos si no existen ya (solo para los últimos 7 días)
-    for i in range(min(7, history_days)):
+    for i in range(min(30, history_days)):
         history_date = date.fromisoformat(data["daily"]["time"][i])
         existing_weather = db.query(Weather).filter(
             Weather.date == history_date,
