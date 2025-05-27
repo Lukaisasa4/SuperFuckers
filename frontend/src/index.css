@@ -1,0 +1,98 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  transition: background 0.5s ease; /* transición suave */
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+input {
+  padding: 8px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 12px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+.weather-box {
+  margin: 10px 0;
+  padding: 10px 14px;
+  background: #e0f0ff;
+  border-left: 5px solid #007acc;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  color: #007acc;
+}
+
+h2 {
+  margin-top: 30px;
+  color: #007acc;
+}
+
+/* Clases de fondo según el clima */
+body.sunny {
+  background: linear-gradient(to top, #fdfbfb, #ebedee);
+}
+
+body.partly-cloudy {
+  background: linear-gradient(to top, #f6f9fc, #c9d6ff);
+}
+
+body.cloudy {
+  background: linear-gradient(to top, #d7d2cc, #304352);
+}
+
+body.overcast {
+  background: linear-gradient(to top, #757f9a, #d7dde8);
+}
+
+body.fog {
+  background: linear-gradient(to top, #bdc3c7, #2c3e50);
+}
+
+body.light-rain {
+  background: linear-gradient(to top, #83a4d4, #b6fbff);
+}
+
+body.rain {
+  background: linear-gradient(to top, #4e54c8, #8f94fb);
+}
+
+body.storm {
+  background: linear-gradient(to top, #0f2027, #203a43, #2c5364);
+}
+
+body.snow {
+  background: linear-gradient(to top, #e6dada, #274046);
+}
+
+body.default {
+  background-color: #f4f4f4;
+}
