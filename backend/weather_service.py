@@ -2,6 +2,7 @@ import requests
 from datetime import datetime, timedelta
 import pytz
 
+# Obtiene las coordenadas (latitud y longitud) de una ubicación usando la API de Open-Meteo
 def get_coordinates(location):
     geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={location}"
     res = requests.get(geo_url)
@@ -11,6 +12,7 @@ def get_coordinates(location):
     coords = data["results"][0]
     return coords["latitude"], coords["longitude"]
 
+# Devuelve el emoji correspondiente al código de clima de Open-Meteo
 def get_weather_emoji(code):
     weather_emojis = {
         0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
@@ -23,6 +25,7 @@ def get_weather_emoji(code):
     }
     return weather_emojis.get(code, "❓")
 
+# Devuelve el nombre del fondo correspondiente al código de clima
 def get_weather_background(code):
     backgrounds = {
         0: "sunny", 1: "partly-cloudy", 2: "cloudy", 3: "overcast",
@@ -35,6 +38,7 @@ def get_weather_background(code):
     }
     return backgrounds.get(code, "default")
 
+# Obtiene los datos meteorológicos de una ubicación
 def get_weather_data(location):
     coords = get_coordinates(location)
     if not coords:
@@ -53,23 +57,28 @@ def get_weather_data(location):
     res = requests.get(url)
     data = res.json()
 
+    # Datos horarios para hoy (temperatura, código y emoji)
     hourly_data = [
         {"time": t[-5:], "temp": temp, "emoji": get_weather_emoji(code)}
         for t, temp, code in zip(data["hourly"]["time"], data["hourly"]["temperature_2m"], data["hourly"]["weathercode"])
         if t.startswith(str(today))
     ]
 
+    # Código de fondo para el clima actual
     background_code = data["hourly"]["weathercode"][0] if data["hourly"]["weathercode"] else 0
 
+    # Histórico de los últimos 7 días
     history = [
         {"date": d, "temp": t, "emoji": get_weather_emoji(c)}
         for d, t, c in zip(data["daily"]["time"][:7], data["daily"]["temperature_2m_max"][:7], data["daily"]["weathercode"][:7])
     ]
+    # Predicción para los próximos 7 días
     forecast = [
         {"date": d, "temp": t, "emoji": get_weather_emoji(c)}
         for d, t, c in zip(data["daily"]["time"][7:], data["daily"]["temperature_2m_max"][7:], data["daily"]["weathercode"][7:])
     ]
 
+    # Devuelve los datos organizados
     return {
         "today": hourly_data,
         "history": history,

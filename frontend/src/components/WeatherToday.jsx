@@ -1,5 +1,6 @@
 import React from "react";
 
+// Diccionario de iconos según el código de clima
 const weatherIcons = {
   0: "☀️",
   1: "🌤️",
@@ -23,7 +24,9 @@ const weatherIcons = {
   99: "🌩️"
 };
 
+// Componente WeatherToday que recibe los datos y la ciudad como props
 function WeatherToday({ data, city }) {
+  // Si no hay datos suficientes, no renderiza nada
   if (!data || !data.temperatures || !data.codes || !data.hours) return null;
 
   // Buscar el índice más cercano a la hora real (local del navegador)
@@ -39,10 +42,12 @@ function WeatherToday({ data, city }) {
     }
   });
 
+  // Obtiene la temperatura, el código y el icono correspondiente a la hora encontrada
   const temp = data.temperatures[idx];
   const code = data.codes[idx];
   const icon = weatherIcons[code] || "❔";
 
+  // Renderiza el bloque principal con ciudad, icono y temperatura
   return (
     <div className="weather-today-hero glass">
       {city && <div className="weather-today-city-hero">{city}</div>}

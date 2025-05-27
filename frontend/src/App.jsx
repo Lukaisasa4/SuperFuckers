@@ -5,10 +5,14 @@ import WeatherHistory from "./components/WeatherHistory";
 import WeatherChart from "./components/WeatherChart";
 import "./App.css";
 
+// Componente principal de la aplicación
 function App() {
+  // Estado para almacenar los datos meteorológicos
   const [weatherData, setWeatherData] = useState(null);
+  // Estado para almacenar la ciudad buscada
   const [city, setCity] = useState("");
 
+  // Función que maneja la búsqueda de una ciudad
   const handleSearch = async (query) => {
     setCity(query);
     const res = await fetch(`http://localhost:8000/weather?location=${query}`);

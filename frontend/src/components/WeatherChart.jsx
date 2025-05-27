@@ -11,13 +11,17 @@ import {
   Filler,
 } from "chart.js";
 
+// Registra los componentes necesarios de Chart.js
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Filler);
 
+// Componente WeatherChart que recibe las horas y temperaturas como props
 function WeatherChart({ hours, temperatures }) {
   if (!hours || !temperatures) return null;
 
+  // Extrae las horas en formato HH:MM para las etiquetas del eje X
   const labels = hours.map(h => h.split("T")[1].slice(0, 5));
 
+  // Configuración de los datos para el gráfico
   const data = {
     labels,
     datasets: [
@@ -43,6 +47,7 @@ function WeatherChart({ hours, temperatures }) {
     ],
   };
 
+  // Opciones de configuración del gráfico
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -63,6 +68,7 @@ function WeatherChart({ hours, temperatures }) {
     },
   };
 
+  // Renderiza el gráfico de líneas dentro de un contenedor
   return (
     <div className="weather-chart-container">
       <Line data={data} options={options} height={400} />

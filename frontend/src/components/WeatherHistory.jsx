@@ -1,5 +1,6 @@
 import React from "react";
 
+// Diccionario de iconos según el código de clima
 const weatherIcons = {
   0: "☀️",
   1: "🌤️",
@@ -23,6 +24,7 @@ const weatherIcons = {
   99: "🌩️"
 };
 
+// Componente WeatherHistory que recibe los datos como prop
 function WeatherHistory({ data }) {
   return (
     <div>
