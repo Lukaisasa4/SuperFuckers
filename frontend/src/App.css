@@ -1,0 +1,93 @@
+/* Estilos base del cuerpo de la página */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenedor principal centrado con fondo blanco y sombra */
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo de los campos de entrada */
+input {
+  padding: 8px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Estilo de los botones */
+button {
+  padding: 8px 12px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Cambio de color del botón al pasar el ratón */
+button:hover {
+  background-color: #005fa3;
+}
+
+/* Caja que muestra información principal del clima */
+.weather-box {
+  margin: 10px 0;
+  padding: 10px 14px;
+  background: #e0f0ff;
+  border-left: 5px solid #007acc;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Caja para mostrar detalles adicionales del clima */
+.details-box {
+  margin: 20px 0;
+  padding: 10px 14px;
+  background: #f0f8ff;
+  border-left: 5px solid #1e90ff;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Estilo para títulos */
+h1, h2 {
+  color: #007acc;
+}
+
+/* Fondos dinámicos según el tipo de clima */
+body.sunny {
+  background: linear-gradient(to top, #fdfbfb, #ebedee);
+}
+
+body.cloudy {
+  background: linear-gradient(to top, #d7d2cc, #304352);
+}
+
+body.rain {
+  background: linear-gradient(to top, #4e54c8, #8f94fb);
+}
+
+body.storm {
+  background: linear-gradient(to top, #0f2027, #203a43, #2c5364);
+}
+
+body.snow {
+  background: linear-gradient(to top, #e6dada, #274046);
+}
+
+/* Fondo por defecto si no hay condición específica */
+body.default {
+  background-color: #f4f4f4;
+}
