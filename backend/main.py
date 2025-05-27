@@ -128,4 +128,22 @@ def add_location(name: str, lat: float, lon: float, db: Session = Depends(get_db
     db.refresh(loc)
     return loc
 
+# Ruta para añadir manualmente un registro de clima para una ubicación y fecha
+@app.post("/add_weather/")
+def add_weather(name: str, temp: float, condition: str, date_str: str, db: Session = Depends(get_db)):
+    loc = db.query(Location).filter(Location.name == name).first()
+    if not loc:
+        raise HTTPException(status_code=404, detail="Ubicación no encontrada")
+    weather = Weather(date=date.fromisoformat(date_str), temperature=temp, condition=condition, location_id=loc.id)
+    db.add(weather)
+    db.commit()
+    db.refresh(weather)
+    return weather
 
+# Ruta para obtener todo el historial meteorológico registrado manualmente de una ubicación
+@app.get("/weather_history/{name}")
+def get_weather_history(name: str, db: Session = Depends(get_db)):
+    loc = db.query(Location).filter(Location.name == name).first()
+    if not loc:
+        raise HTTPException(status_code=404, detail="Ubicación no encontrada")
+    return loc.weather_data
