@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+
 Base = declarative_base()
 
 #Define la tabla llamada locations.
@@ -41,3 +42,4 @@ class Weather(Base):
     location_id = Column(Integer, ForeignKey('locations.id'))
 
     location = relationship("Location", back_populates="weather_data")
+    

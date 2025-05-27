@@ -7,6 +7,8 @@ from datetime import date, timedelta
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 
+
+
 # Crear la instancia de la aplicación FastAPI
 app = FastAPI()
 
@@ -60,9 +62,30 @@ def get_weather(location: str, db: Session = Depends(get_db)):
     else:
         # Si existe, tomar coordenadas desde la base de datos
         lat, lon = loc.latitude, loc.longitude
-
-    # Obtener datos meteorológicos desde Open-Meteo
+        
+        
+        # Obtener datos meteorológicos desde Open-Meteo
     data = get_weather_from_openmeteo(lat, lon)
+        
+        # Guardar en la base de datos los datos históricos si no existen ya
+    for i in range(7):
+        history_date = date.fromisoformat(data["daily"]["time"][i])
+        existing_weather = db.query(Weather).filter(
+            Weather.date == history_date,
+            Weather.location_id == loc.id
+        ).first()
+        if not existing_weather:
+            weather = Weather(
+                date=history_date,
+                temperature=(data["daily"]["temperature_2m_max"][i] + data["daily"]["temperature_2m_min"][i]) / 2,
+                condition=str(data["daily"]["weathercode"][i]),
+                location_id=loc.id
+            )
+            db.add(weather)
+    db.commit()  # Guardar todos los cambios de golpe
+
+
+    
 
     # Procesar datos de las próximas 24 horas
     today_data = {
