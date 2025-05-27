@@ -23,17 +23,31 @@ const weatherIcons = {
   99: "🌩️"
 };
 
-function WeatherToday({ data }) {
+function WeatherToday({ data, city }) {
+  if (!data || !data.temperatures || !data.codes || !data.hours) return null;
+
+  // Buscar el índice más cercano a la hora real (local del navegador)
+  const now = new Date();
+  let idx = 0;
+  let minDiff = Infinity;
+  data.hours.forEach((h, i) => {
+    const hourDate = new Date(h);
+    const diff = Math.abs(hourDate.getHours() - now.getHours());
+    if (diff < minDiff) {
+      minDiff = diff;
+      idx = i;
+    }
+  });
+
+  const temp = data.temperatures[idx];
+  const code = data.codes[idx];
+  const icon = weatherIcons[code] || "❔";
+
   return (
-    <div>
-      <h2>Hoy</h2>
-      {data.hours.map((hour, idx) => (
-        <div className="weather-box" key={idx}>
-          <span>{hour.split("T")[1]}</span>
-          <span>{data.temperatures[idx]}°C</span>
-          <span>{weatherIcons[data.codes[idx]] || "❔"}</span>
-        </div>
-      ))}
+    <div className="weather-today-hero glass">
+      {city && <div className="weather-today-city-hero">{city}</div>}
+      <div className="weather-today-icon-hero">{icon}</div>
+      <div className="weather-today-temp-hero">{temp}°C</div>
     </div>
   );
 }
