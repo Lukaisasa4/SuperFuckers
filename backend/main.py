@@ -36,7 +36,24 @@ def get_weather(
     )
     data = requests.get(url).json()
 
-    # Datos horarios para hoy (añadimos viento, humedad, presión, sensación térmica, UV y precipitación)
+    # Guardar en la base de datos los datos históricos si no existen ya (solo para los últimos 7 días)
+    for i in range(min(7, history_days)):
+        history_date = date.fromisoformat(data["daily"]["time"][i])
+        existing_weather = db.query(Weather).filter(
+            Weather.date == history_date,
+            Weather.location_id == loc.id
+        ).first()
+        if not existing_weather:
+            weather = Weather(
+                date=history_date,
+                temperature=(data["daily"]["temperature_2m_max"][i] + data["daily"]["temperature_2m_min"][i]) / 2,
+                condition=str(data["daily"]["weathercode"][i]),
+                location_id=loc.id
+            )
+            db.add(weather)
+    db.commit()
+
+    # Procesar datos de las próximas 24 horas
     today_data = {
         "temperatures": data["hourly"]["temperature_2m"][:24],
         "hours": data["hourly"]["time"][:24],
