@@ -46,6 +46,13 @@ function WeatherToday({ data, city }) {
   const temp = data.temperatures[idx];
   const code = data.codes[idx];
   const icon = weatherIcons[code] || "❔";
+  // Nuevos datos actuales
+  const wind = data.winds ? data.winds[idx] : null;
+  const humidity = data.humidity ? data.humidity[idx] : null;
+  const pressure = data.pressure ? data.pressure[idx] : null;
+  const apparent = data.apparent_temperature ? data.apparent_temperature[idx] : null;
+  const uv = data.uv_index ? data.uv_index[idx] : null;
+  const precip = data.precipitation ? data.precipitation[idx] : null;
 
   // Renderiza el bloque principal con ciudad, icono y temperatura
   return (
@@ -53,6 +60,14 @@ function WeatherToday({ data, city }) {
       {city && <div className="weather-today-city-hero">{city}</div>}
       <div className="weather-today-icon-hero">{icon}</div>
       <div className="weather-today-temp-hero">{temp}°C</div>
+      <div className="weather-today-extra">
+        {wind !== null && <span>💨 Viento: {wind} km/h</span>}
+        {humidity !== null && <span>💧 Humedad: {humidity}%</span>}
+        {pressure !== null && <span>🌡️ Presión: {pressure} hPa</span>}
+        {apparent !== null && <span>🤗 Sensación: {apparent}°C</span>}
+        {uv !== null && <span>🌞 UV: {uv}</span>}
+        {precip !== null && <span>🌧️ Precipitación: {precip} mm</span>}
+      </div>
     </div>
   );
 }

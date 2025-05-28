@@ -216,3 +216,34 @@ button:hover {
   background: linear-gradient(90deg, #005fa3 0%, #008efb 100%);
   transform: scale(1.04);
 }
+
+.weather-today-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-top: 22px;
+  font-size: 1.5rem;
+  color: #fff;
+  text-shadow: 0 2px 8px #138dff, 0 2px 8px #000000;
+  font-weight: 700;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 142, 251, 0.13);
+  border-radius: 18px;
+  padding: 18px 32px;
+  box-shadow: 0 2px 12px rgba(0, 142, 251, 0.10);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.weather-today-extra span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.10);
+  min-width: 120px;
+  justify-content: center;
+}
