@@ -4,9 +4,8 @@ from sqlalchemy.orm import Session
 from datetime import date
 import requests
 
-# Si usas SQLAlchemy, importa tus modelos y SessionLocal aquí
-# from database import SessionLocal, engine
-# from models import Location, Weather
+from database import SessionLocal, engine
+from models import Location, Weather
 
 app = FastAPI()
 
@@ -20,41 +19,65 @@ app.add_middleware(
 )
 
 def get_db():
-    # db = SessionLocal()
-    # try:
-    #     yield db
-    # finally:
-    #     db.close()
-    pass  # Elimina esto y descomenta lo de arriba si usas SQLAlchemy
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.get("/weather")
 def get_weather(
     location: str,
-    history_days: int = Query(7, ge=1, le=30),
-    # db: Session = Depends(get_db)
+    history_days: int = Query(30, ge=1, le=30),
+    db: Session = Depends(get_db)
 ):
-    # --- Si tienes base de datos, aquí iría la lógica de búsqueda y guardado ---
-    # Para ejemplo simple, solo usamos la API externa
+    # Buscar la ubicación en la base de datos
+    loc = db.query(Location).filter(Location.name == location).first()
 
-    # Geocodificación
-    geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
-    res = requests.get(geo_url).json()
-    if not res.get("results"):
-        raise HTTPException(status_code=404, detail="Ubicación no encontrada")
-    result = res["results"][0]
-    lat, lon = result["latitude"], result["longitude"]
+    # Si no existe, buscar coordenadas y guardarlas
+    if not loc:
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
+        res = requests.get(geo_url).json()
+        if not res.get("results"):
+            raise HTTPException(status_code=404, detail="Ubicación no encontrada")
+        result = res["results"][0]
+        lat, lon = result["latitude"], result["longitude"]
+        loc = Location(name=location, latitude=lat, longitude=lon)
+        db.add(loc)
+        db.commit()
+        db.refresh(loc)
+    else:
+        lat, lon = loc.latitude, loc.longitude
 
-    # Llama a la API de Open-Meteo con los nuevos parámetros
+    # Llama a la API de Open-Meteo con más variables
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
         f"latitude={lat}&longitude={lon}"
         f"&hourly=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m,surface_pressure"
-        f"&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto"
-        f"&past_days={history_days}&forecast_days=7"
+        f"&daily=temperature_2m_max,temperature_2m_min,weathercode"
+        f"&timezone=auto&past_days={history_days}&forecast_days=7"
     )
     data = requests.get(url).json()
 
-    # Datos horarios para hoy (añadimos viento, humedad y presión)
+    # Guardar en base de datos los datos históricos si no existen
+    for i in range(min(30, history_days)):
+        history_date = date.fromisoformat(data["daily"]["time"][i])
+        existing_weather = db.query(Weather).filter(
+            Weather.date == history_date,
+            Weather.location_id == loc.id
+        ).first()
+        if not existing_weather:
+            avg_temp = (data["daily"]["temperature_2m_max"][i] + data["daily"]["temperature_2m_min"][i]) / 2
+            weather = Weather(
+                date=history_date,
+                temperature=avg_temp,
+                condition=str(data["daily"]["weathercode"][i]),
+                location_id=loc.id
+            )
+            db.add(weather)
+    db.commit()
+
+    # Datos horarios para hoy
     today_data = {
         "temperatures": data["hourly"]["temperature_2m"][:24],
         "hours": data["hourly"]["time"][:24],
@@ -64,7 +87,7 @@ def get_weather(
         "pressure": data["hourly"].get("surface_pressure", [None]*24)[:24],
     }
 
-    # Historial de los últimos N días (history_days)
+    # Historial
     history = []
     for i in range(history_days):
         history.append({
@@ -74,7 +97,7 @@ def get_weather(
             "code": data["daily"]["weathercode"][i]
         })
 
-    # Predicción para los próximos 7 días
+    # Predicción
     forecast = []
     for i in range(history_days, history_days + 7):
         forecast.append({
@@ -84,7 +107,7 @@ def get_weather(
             "code": data["daily"]["weathercode"][i]
         })
 
-    # Selección de fondo visual según el código meteorológico actual
+    # Fondo visual
     current_code = today_data["codes"][0]
     if current_code in [0, 1]:
         background = "sunny"
