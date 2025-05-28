@@ -1,9 +1,16 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from datetime import date
 import requests
+
+# Si usas SQLAlchemy, importa tus modelos y SessionLocal aquí
+# from database import SessionLocal, engine
+# from models import Location, Weather
 
 app = FastAPI()
 
+# Permitir CORS para desarrollo local
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,11 +19,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def get_db():
+    # db = SessionLocal()
+    # try:
+    #     yield db
+    # finally:
+    #     db.close()
+    pass  # Elimina esto y descomenta lo de arriba si usas SQLAlchemy
+
 @app.get("/weather")
 def get_weather(
     location: str,
     history_days: int = Query(7, ge=1, le=30),
+    # db: Session = Depends(get_db)
 ):
+    # --- Si tienes base de datos, aquí iría la lógica de búsqueda y guardado ---
+    # Para ejemplo simple, solo usamos la API externa
+
     # Geocodificación
     geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
     res = requests.get(geo_url).json()
@@ -29,31 +48,13 @@ def get_weather(
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
         f"latitude={lat}&longitude={lon}"
-        f"&hourly=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m,surface_pressure,"
-        f"apparent_temperature,uv_index,precipitation"
+        f"&hourly=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m,surface_pressure"
         f"&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto"
         f"&past_days={history_days}&forecast_days=7"
     )
     data = requests.get(url).json()
 
-    # Guardar en la base de datos los datos históricos si no existen ya (solo para los últimos 7 días)
-    for i in range(min(7, history_days)):
-        history_date = date.fromisoformat(data["daily"]["time"][i])
-        existing_weather = db.query(Weather).filter(
-            Weather.date == history_date,
-            Weather.location_id == loc.id
-        ).first()
-        if not existing_weather:
-            weather = Weather(
-                date=history_date,
-                temperature=(data["daily"]["temperature_2m_max"][i] + data["daily"]["temperature_2m_min"][i]) / 2,
-                condition=str(data["daily"]["weathercode"][i]),
-                location_id=loc.id
-            )
-            db.add(weather)
-    db.commit()
-
-    # Procesar datos de las próximas 24 horas
+    # Datos horarios para hoy (añadimos viento, humedad y presión)
     today_data = {
         "temperatures": data["hourly"]["temperature_2m"][:24],
         "hours": data["hourly"]["time"][:24],
@@ -61,9 +62,6 @@ def get_weather(
         "winds": data["hourly"].get("windspeed_10m", [None]*24)[:24],
         "humidity": data["hourly"].get("relativehumidity_2m", [None]*24)[:24],
         "pressure": data["hourly"].get("surface_pressure", [None]*24)[:24],
-        "apparent_temperature": data["hourly"].get("apparent_temperature", [None]*24)[:24],
-        "uv_index": data["hourly"].get("uv_index", [None]*24)[:24],
-        "precipitation": data["hourly"].get("precipitation", [None]*24)[:24],
     }
 
     # Historial de los últimos N días (history_days)
